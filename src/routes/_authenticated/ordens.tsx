@@ -1,18 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { TableSkeleton } from "@/components/shared/TableSkeleton";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay } from "@/components/common/DateDisplay";
+import { Money } from "@/components/common/Money";
+import { DataTable, type DataTableColumn } from "@/components/tables/DataTable";
 import { toast } from "sonner";
 import { Plus, Wrench } from "lucide-react";
 import { ordensService, queryKeys } from "@/services/queries";
 import { prioridadeLabels, statusOSLabels } from "@/lib/labels";
-import { brl, dataCurta } from "@/lib/format";
 import { ultimasOS } from "@/components/dashboard/mock-data";
 import type { OrdemServico } from "@/types/domain";
 
@@ -20,15 +19,47 @@ export const Route = createFileRoute("/_authenticated/ordens")({
   head: () => ({
     meta: [
       { title: "Ordens de Serviço — BP Info Gestão" },
-      { name: "description", content: "Abertura, acompanhamento, timeline e histórico das ordens de serviço técnicas." },
+      {
+        name: "description",
+        content: "Abertura, acompanhamento, timeline e histórico das ordens de serviço técnicas.",
+      },
       { property: "og:title", content: "Ordens de Serviço — BP Info Gestão" },
-      { property: "og:description", content: "Abertura, acompanhamento, timeline e histórico das ordens de serviço técnicas." },
+      {
+        property: "og:description",
+        content: "Abertura, acompanhamento, timeline e histórico das ordens de serviço técnicas.",
+      },
     ],
   }),
   component: OrdensPage,
 });
 
 type OSRow = OrdemServico & { clientes?: { nome: string } | null };
+
+const columns: DataTableColumn<OSRow>[] = [
+  {
+    key: "numero",
+    header: "Nº",
+    cell: (o) => <span className="font-mono text-xs">#{String(o.numero).padStart(4, "0")}</span>,
+  },
+  { key: "cliente", header: "Cliente", cell: (o) => o.clientes?.nome ?? "—" },
+  { key: "titulo", header: "Título", cell: (o) => <span className="font-medium">{o.titulo}</span> },
+  {
+    key: "prioridade",
+    header: "Prioridade",
+    cell: (o) => <StatusBadge {...prioridadeLabels[o.prioridade]} />,
+  },
+  { key: "status", header: "Status", cell: (o) => <StatusBadge {...statusOSLabels[o.status]} /> },
+  {
+    key: "entrada",
+    header: "Entrada",
+    className: "text-right",
+    cell: (o) => (
+      <span className="text-sm text-muted-foreground">
+        <DateDisplay value={o.data_entrada} />
+      </span>
+    ),
+  },
+];
 
 function OrdensPage() {
   const { data, isLoading } = useQuery({
@@ -53,83 +84,38 @@ function OrdensPage() {
         {(["aberta", "em_execucao", "aguardando_peca", "entregue"] as const).map((s) => (
           <Card key={s} className="surface-card p-4">
             <StatusBadge {...statusOSLabels[s]} />
-            <p className="mt-2 text-xl font-bold">
-              {ordens.filter((o) => o.status === s).length}
-            </p>
+            <p className="mt-2 text-xl font-bold">{ordens.filter((o) => o.status === s).length}</p>
           </Card>
         ))}
       </div>
 
-      <Card className="surface-card">
-        <CardHeader>
-          <CardTitle className="text-base">Ordens registradas</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <TableSkeleton cols={6} />
-          ) : ordens.length === 0 ? (
-            <EmptyState
-              icon={Wrench}
-              title="Nenhuma ordem de serviço"
-              description="Quando as OS forem abertas, elas aparecerão aqui com status, prioridade e timeline."
-            />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Nº</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Título</TableHead>
-                  <TableHead>Prioridade</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Entrada</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {ordens.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell className="font-mono text-xs">
-                      #{String(o.numero).padStart(4, "0")}
-                    </TableCell>
-                    <TableCell>{o.clientes?.nome ?? "—"}</TableCell>
-                    <TableCell className="font-medium">{o.titulo}</TableCell>
-                    <TableCell>
-                      <StatusBadge {...prioridadeLabels[o.prioridade]} />
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge {...statusOSLabels[o.status]} />
-                    </TableCell>
-                    <TableCell className="text-right text-sm text-muted-foreground">
-                      {dataCurta(o.data_entrada)}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <Section title="Ordens registradas">
+        <DataTable
+          columns={columns}
+          data={ordens}
+          isLoading={isLoading}
+          getRowKey={(o) => o.id}
+          emptyIcon={Wrench}
+          emptyTitle="Nenhuma ordem de serviço"
+          emptyDescription="Quando as OS forem abertas, elas aparecerão aqui com status, prioridade e timeline."
+        />
+      </Section>
 
-      <Card className="surface-card">
-        <CardHeader>
-          <CardTitle className="text-base">Exemplo de timeline (demonstração)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ol className="relative space-y-5 border-l border-border pl-6">
-            {ultimasOS.map((os) => (
-              <li key={os.numero} className="relative">
-                <span className="absolute top-1.5 -left-[27px] size-2.5 rounded-full bg-primary ring-4 ring-primary/15" />
-                <p className="text-sm font-medium">
-                  OS #{String(os.numero).padStart(4, "0")} — {os.equipamento}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {os.cliente} · {statusOSLabels[os.status].label} · {brl(os.valor)}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </CardContent>
-      </Card>
+      <Section title="Exemplo de timeline (demonstração)">
+        <ol className="relative space-y-5 border-l border-border pl-6">
+          {ultimasOS.map((os) => (
+            <li key={os.numero} className="relative">
+              <span className="absolute top-1.5 -left-[27px] size-2.5 rounded-full bg-primary ring-4 ring-primary/15" />
+              <p className="text-sm font-medium">
+                OS #{String(os.numero).padStart(4, "0")} — {os.equipamento}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {os.cliente} · {statusOSLabels[os.status].label} · <Money value={os.valor} />
+              </p>
+            </li>
+          ))}
+        </ol>
+      </Section>
     </>
   );
 }

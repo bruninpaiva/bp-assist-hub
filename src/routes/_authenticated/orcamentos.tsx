@@ -1,18 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { TableSkeleton } from "@/components/shared/TableSkeleton";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DateDisplay } from "@/components/common/DateDisplay";
+import { Money } from "@/components/common/Money";
+import { InfoCard } from "@/components/cards/InfoCard";
+import { DataTable, type DataTableColumn } from "@/components/tables/DataTable";
 import { toast } from "sonner";
 import { FileDown, FileText, Plus } from "lucide-react";
 import { orcamentosService, queryKeys } from "@/services/queries";
 import { statusOrcamentoLabels } from "@/lib/labels";
-import { brl, dataCurta } from "@/lib/format";
 import { ultimosOrcamentos } from "@/components/dashboard/mock-data";
 import type { Orcamento } from "@/types/domain";
 
@@ -20,15 +19,62 @@ export const Route = createFileRoute("/_authenticated/orcamentos")({
   head: () => ({
     meta: [
       { title: "Orçamentos — BP Info Gestão" },
-      { name: "description", content: "Criação, envio e acompanhamento de orçamentos, preparados para geração de PDF." },
+      {
+        name: "description",
+        content: "Criação, envio e acompanhamento de orçamentos, preparados para geração de PDF.",
+      },
       { property: "og:title", content: "Orçamentos — BP Info Gestão" },
-      { property: "og:description", content: "Criação, envio e acompanhamento de orçamentos, preparados para geração de PDF." },
+      {
+        property: "og:description",
+        content: "Criação, envio e acompanhamento de orçamentos, preparados para geração de PDF.",
+      },
     ],
   }),
   component: OrcamentosPage,
 });
 
 type OrcRow = Orcamento & { clientes?: { nome: string } | null };
+
+const columns: DataTableColumn<OrcRow>[] = [
+  {
+    key: "numero",
+    header: "Número",
+    cell: (o) => (
+      <span className="font-mono text-xs">
+        {o.numero}/{o.ano}
+      </span>
+    ),
+  },
+  {
+    key: "cliente",
+    header: "Cliente",
+    cell: (o) => <span className="font-medium">{o.clientes?.nome ?? "—"}</span>,
+  },
+  {
+    key: "emissao",
+    header: "Emissão",
+    cell: (o) => (
+      <span className="text-sm text-muted-foreground">
+        <DateDisplay value={o.data_emissao} />
+      </span>
+    ),
+  },
+  {
+    key: "status",
+    header: "Status",
+    cell: (o) => <StatusBadge {...statusOrcamentoLabels[o.status]} />,
+  },
+  {
+    key: "total",
+    header: "Total",
+    className: "text-right",
+    cell: (o) => (
+      <span className="font-semibold">
+        <Money value={o.total} />
+      </span>
+    ),
+  },
+];
 
 function OrcamentosPage() {
   const { data, isLoading } = useQuery({
@@ -44,7 +90,10 @@ function OrcamentosPage() {
         description="Modelo baseado no orçamento oficial da BP Info, pronto para PDF e aprovação online."
         actions={
           <>
-            <Button variant="outline" onClick={() => toast.info("Geração de PDF será habilitada em breve.")}>
+            <Button
+              variant="outline"
+              onClick={() => toast.info("Geração de PDF será habilitada em breve.")}
+            >
               <FileDown className="size-4" /> Exportar PDF
             </Button>
             <Button onClick={() => toast.info("Cadastro de orçamentos chega no próximo módulo.")}>
@@ -54,73 +103,40 @@ function OrcamentosPage() {
         }
       />
 
-      <Card className="surface-card">
-        <CardHeader>
-          <CardTitle className="text-base">Orçamentos emitidos</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <TableSkeleton cols={5} />
-          ) : orcamentos.length === 0 ? (
-            <EmptyState
-              icon={FileText}
-              title="Nenhum orçamento emitido"
-              description="A numeração continua a partir do nº 67/2023, seguindo o histórico da empresa."
-            />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Número</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Emissão</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Total</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {orcamentos.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell className="font-mono text-xs">
-                      {o.numero}/{o.ano}
-                    </TableCell>
-                    <TableCell className="font-medium">{o.clientes?.nome ?? "—"}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
-                      {dataCurta(o.data_emissao)}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge {...statusOrcamentoLabels[o.status]} />
-                    </TableCell>
-                    <TableCell className="text-right font-semibold">{brl(o.total)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <Section title="Orçamentos emitidos">
+        <DataTable
+          columns={columns}
+          data={orcamentos}
+          isLoading={isLoading}
+          getRowKey={(o) => o.id}
+          emptyIcon={FileText}
+          emptyTitle="Nenhum orçamento emitido"
+          emptyDescription="A numeração continua a partir do nº 67/2023, seguindo o histórico da empresa."
+        />
+      </Section>
 
-      <Card className="surface-card">
-        <CardHeader>
-          <CardTitle className="text-base">Pré-visualização do modelo (demonstração)</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {ultimosOrcamentos.map((o) => (
-            <div
-              key={o.numero}
-              className="flex flex-wrap items-center gap-3 rounded-lg border border-border/70 bg-muted/20 px-3.5 py-3"
-            >
+      <Section title="Pré-visualização do modelo (demonstração)" contentClassName="space-y-2">
+        {ultimosOrcamentos.map((o) => (
+          <InfoCard
+            key={o.numero}
+            leading={
               <span className="font-mono text-xs text-muted-foreground">Nº {o.numero}/2023</span>
-              <p className="min-w-0 flex-1 truncate text-sm font-medium">{o.cliente}</p>
-              <StatusBadge {...statusOrcamentoLabels[o.status]} />
-              <span className="w-28 text-right text-sm font-semibold">{brl(o.total)}</span>
-            </div>
-          ))}
-          <p className="pt-2 text-xs text-muted-foreground">
-            Validade padrão de 15 dias · Valores em Reais (R$) · BP Info — CNPJ 27.592.687/0001-58
-          </p>
-        </CardContent>
-      </Card>
+            }
+            title={o.cliente}
+            meta={
+              <>
+                <StatusBadge {...statusOrcamentoLabels[o.status]} />
+                <span className="w-28 text-right text-sm font-semibold">
+                  <Money value={o.total} />
+                </span>
+              </>
+            }
+          />
+        ))}
+        <p className="pt-2 text-xs text-muted-foreground">
+          Validade padrão de 15 dias · Valores em Reais (R$) · BP Info — CNPJ 27.592.687/0001-58
+        </p>
+      </Section>
     </>
   );
 }

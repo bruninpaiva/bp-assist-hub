@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
 
-type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "primary";
+export type StatusTone = "neutral" | "info" | "success" | "warning" | "danger" | "primary";
 
-const tones: Record<Tone, string> = {
+const tones: Record<StatusTone, string> = {
   neutral: "bg-muted text-muted-foreground border-border",
   info: "bg-info/12 text-info border-info/30",
   success: "bg-success/12 text-success border-success/30",
@@ -17,7 +17,7 @@ export function StatusBadge({
   className,
 }: {
   label: string;
-  tone?: Tone;
+  tone?: StatusTone;
   className?: string;
 }) {
   return (

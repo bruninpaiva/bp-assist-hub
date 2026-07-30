@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Loader2, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { LoadingState } from "@/components/common/LoadingState";
 import logo from "@/assets/bp-info-logo.png";
 
 export const Route = createFileRoute("/auth")({
@@ -26,7 +27,8 @@ export const Route = createFileRoute("/auth")({
       { title: "Entrar — BP Info Gestão" },
       {
         name: "description",
-        content: "Acesse o painel de gestão da BP Info: ordens de serviço, orçamentos e financeiro.",
+        content:
+          "Acesse o painel de gestão da BP Info: ordens de serviço, orçamentos e financeiro.",
       },
       { property: "og:title", content: "Entrar — BP Info Gestão" },
       {
@@ -110,7 +112,13 @@ function AuthPage() {
       <section className="relative hidden flex-col justify-between border-r border-border/70 bg-card/40 p-12 lg:flex">
         <div className="flex items-center gap-3">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white p-2">
-            <img src={logo} alt="Logo BP Info" width={32} height={32} className="size-full object-contain" />
+            <img
+              src={logo}
+              alt="Logo BP Info"
+              width={32}
+              height={32}
+              className="size-full object-contain"
+            />
           </div>
           <div>
             <p className="text-lg font-bold tracking-tight">BP Info Gestão</p>
@@ -145,7 +153,13 @@ function AuthPage() {
         <Card className="surface-card w-full max-w-md p-7">
           <div className="mb-6 flex items-center gap-3 lg:hidden">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white p-1.5">
-              <img src={logo} alt="Logo BP Info" width={28} height={28} className="size-full object-contain" />
+              <img
+                src={logo}
+                alt="Logo BP Info"
+                width={28}
+                height={28}
+                className="size-full object-contain"
+              />
             </div>
             <p className="text-lg font-bold">BP Info Gestão</p>
           </div>
@@ -191,7 +205,7 @@ function AuthPage() {
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    {loading ? <LoadingState /> : null}
                     Entrar no sistema
                   </Button>
                 </form>
@@ -246,7 +260,7 @@ function AuthPage() {
                     )}
                   />
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? <Loader2 className="size-4 animate-spin" /> : null}
+                    {loading ? <LoadingState /> : null}
                     Criar minha conta
                   </Button>
                 </form>

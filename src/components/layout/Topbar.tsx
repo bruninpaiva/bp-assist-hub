@@ -65,9 +65,7 @@ export function Topbar() {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel className="space-y-1">
               <p className="text-sm">{profile?.nome || "Usuário"}</p>
-              <p className="truncate text-xs font-normal text-muted-foreground">
-                {user?.email}
-              </p>
+              <p className="truncate text-xs font-normal text-muted-foreground">{user?.email}</p>
               <div className="flex flex-wrap gap-1 pt-1">
                 {roles.map((r) => (
                   <Badge key={r} variant="secondary" className="text-[10px]">

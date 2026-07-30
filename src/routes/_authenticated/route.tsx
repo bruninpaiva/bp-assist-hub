@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { PageContainer } from "@/components/layout/PageContainer";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -22,9 +23,9 @@ function AppLayout() {
         <SidebarInset className="min-w-0 bg-transparent">
           <Topbar />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            <div className="mx-auto w-full max-w-[1400px] animate-fade-up space-y-6">
+            <PageContainer>
               <Outlet />
-            </div>
+            </PageContainer>
           </main>
         </SidebarInset>
       </div>

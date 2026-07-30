@@ -1,13 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PageHeader } from "@/components/shared/PageHeader";
-import { EmptyState } from "@/components/shared/EmptyState";
-import { TableSkeleton } from "@/components/shared/TableSkeleton";
-import { StatusBadge } from "@/components/shared/StatusBadge";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { Section } from "@/components/layout/Section";
+import { StatusBadge } from "@/components/common/StatusBadge";
+import { DataTable, type DataTableColumn } from "@/components/tables/DataTable";
 import { toast } from "sonner";
 import { HardDrive, Plus } from "lucide-react";
 import { equipamentosService, queryKeys } from "@/services/queries";
@@ -18,15 +16,53 @@ export const Route = createFileRoute("/_authenticated/equipamentos")({
   head: () => ({
     meta: [
       { title: "Equipamentos — BP Info Gestão" },
-      { name: "description", content: "Cadastro de notebooks, desktops, servidores, impressoras e demais equipamentos por cliente." },
+      {
+        name: "description",
+        content:
+          "Cadastro de notebooks, desktops, servidores, impressoras e demais equipamentos por cliente.",
+      },
       { property: "og:title", content: "Equipamentos — BP Info Gestão" },
-      { property: "og:description", content: "Cadastro de notebooks, desktops, servidores, impressoras e demais equipamentos por cliente." },
+      {
+        property: "og:description",
+        content:
+          "Cadastro de notebooks, desktops, servidores, impressoras e demais equipamentos por cliente.",
+      },
     ],
   }),
   component: EquipamentosPage,
 });
 
 type EquipamentoRow = Equipamento & { clientes?: { nome: string } | null };
+
+const columns: DataTableColumn<EquipamentoRow>[] = [
+  {
+    key: "equipamento",
+    header: "Equipamento",
+    cell: (e) => (
+      <span className="font-medium">{[e.marca, e.modelo].filter(Boolean).join(" ") || "—"}</span>
+    ),
+  },
+  {
+    key: "tipo",
+    header: "Tipo",
+    cell: (e) => <StatusBadge label={tipoEquipamentoLabels[e.tipo]} tone="info" />,
+  },
+  {
+    key: "serie",
+    header: "Série / Patrimônio",
+    cell: (e) => <span className="font-mono text-xs">{e.numero_serie || e.patrimonio || "—"}</span>,
+  },
+  { key: "cliente", header: "Cliente", cell: (e) => e.clientes?.nome ?? "—" },
+  {
+    key: "defeito",
+    header: "Defeito informado",
+    cell: (e) => (
+      <span className="block max-w-xs truncate text-sm text-muted-foreground">
+        {e.defeito_informado || "—"}
+      </span>
+    ),
+  },
+];
 
 function EquipamentosPage() {
   const { data, isLoading } = useQuery({
@@ -48,63 +84,29 @@ function EquipamentosPage() {
       />
 
       <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        {Object.entries(tipoEquipamentoLabels).slice(0, 5).map(([key, label]) => (
-          <Card key={key} className="surface-card p-4">
-            <p className="text-xs text-muted-foreground">{label}</p>
-            <p className="mt-1 text-xl font-bold">
-              {equipamentos.filter((e) => e.tipo === key).length}
-            </p>
-          </Card>
-        ))}
+        {Object.entries(tipoEquipamentoLabels)
+          .slice(0, 5)
+          .map(([key, label]) => (
+            <Card key={key} className="surface-card p-4">
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="mt-1 text-xl font-bold">
+                {equipamentos.filter((e) => e.tipo === key).length}
+              </p>
+            </Card>
+          ))}
       </div>
 
-      <Card className="surface-card">
-        <CardHeader>
-          <CardTitle className="text-base">Equipamentos cadastrados</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <TableSkeleton cols={5} />
-          ) : equipamentos.length === 0 ? (
-            <EmptyState
-              icon={HardDrive}
-              title="Nenhum equipamento cadastrado"
-              description="Vincule equipamentos aos clientes para acompanhar todo o histórico de manutenções."
-            />
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Equipamento</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Série / Patrimônio</TableHead>
-                  <TableHead>Cliente</TableHead>
-                  <TableHead>Defeito informado</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {equipamentos.map((e) => (
-                  <TableRow key={e.id}>
-                    <TableCell className="font-medium">
-                      {[e.marca, e.modelo].filter(Boolean).join(" ") || "—"}
-                    </TableCell>
-                    <TableCell>
-                      <StatusBadge label={tipoEquipamentoLabels[e.tipo]} tone="info" />
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {e.numero_serie || e.patrimonio || "—"}
-                    </TableCell>
-                    <TableCell>{e.clientes?.nome ?? "—"}</TableCell>
-                    <TableCell className="max-w-xs truncate text-sm text-muted-foreground">
-                      {e.defeito_informado || "—"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      <Section title="Equipamentos cadastrados">
+        <DataTable
+          columns={columns}
+          data={equipamentos}
+          isLoading={isLoading}
+          getRowKey={(e) => e.id}
+          emptyIcon={HardDrive}
+          emptyTitle="Nenhum equipamento cadastrado"
+          emptyDescription="Vincule equipamentos aos clientes para acompanhar todo o histórico de manutenções."
+        />
+      </Section>
     </>
   );
 }
