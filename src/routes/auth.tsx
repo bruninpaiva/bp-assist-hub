@@ -109,7 +109,9 @@ function AuthPage() {
 
       <section className="relative hidden flex-col justify-between border-r border-border/70 bg-card/40 p-12 lg:flex">
         <div className="flex items-center gap-3">
-          <img src={logo} alt="Logo BP Info" width={44} height={44} className="size-11" />
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-white p-2">
+            <img src={logo} alt="Logo BP Info" width={32} height={32} className="size-full object-contain" />
+          </div>
           <div>
             <p className="text-lg font-bold tracking-tight">BP Info Gestão</p>
             <p className="text-xs text-muted-foreground">Assistência técnica e serviços de TI</p>
@@ -142,7 +144,9 @@ function AuthPage() {
       <section className="relative flex items-center justify-center p-6">
         <Card className="surface-card w-full max-w-md p-7">
           <div className="mb-6 flex items-center gap-3 lg:hidden">
-            <img src={logo} alt="Logo BP Info" width={40} height={40} className="size-10" />
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white p-1.5">
+              <img src={logo} alt="Logo BP Info" width={28} height={28} className="size-full object-contain" />
+            </div>
             <p className="text-lg font-bold">BP Info Gestão</p>
           </div>
 
