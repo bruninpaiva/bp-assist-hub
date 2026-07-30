@@ -148,6 +148,7 @@ export type Database = {
           id: string
           inscricao_estadual: string | null
           nome: string
+          nome_fantasia: string | null
           numero: string | null
           observacoes: string | null
           razao_social: string | null
@@ -173,6 +174,7 @@ export type Database = {
           id?: string
           inscricao_estadual?: string | null
           nome: string
+          nome_fantasia?: string | null
           numero?: string | null
           observacoes?: string | null
           razao_social?: string | null
@@ -198,6 +200,7 @@ export type Database = {
           id?: string
           inscricao_estadual?: string | null
           nome?: string
+          nome_fantasia?: string | null
           numero?: string | null
           observacoes?: string | null
           razao_social?: string | null

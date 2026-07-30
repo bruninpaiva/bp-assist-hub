@@ -1,7 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+import { onlyDigits } from "@/lib/masks";
+import type { Cliente, TipoPessoa } from "@/types/domain";
 
 export const queryKeys = {
-  clientes: ["clientes"] as const,
+  clientes: (params?: ClientesListParams) => ["clientes", params ?? {}] as const,
   cliente: (id: string) => ["clientes", id] as const,
   equipamentos: ["equipamentos"] as const,
   ordens: ["ordens"] as const,
@@ -24,15 +27,73 @@ function unwrap<T>(res: { data: T | null; error: { message: string } | null }): 
   return (res.data ?? ([] as unknown)) as T;
 }
 
+export type ClientesOrdenarPor = "nome" | "created_at";
+export type ClientesStatus = "todos" | "ativos" | "inativos";
+export type ClientesTipo = "todos" | TipoPessoa;
+
+export interface ClientesListParams {
+  busca?: string;
+  tipo?: ClientesTipo;
+  status?: ClientesStatus;
+  ordenarPor?: ClientesOrdenarPor;
+  ordem?: "asc" | "desc";
+  pagina?: number;
+  porPagina?: number;
+}
+
+export interface ClientesListResult {
+  data: Cliente[];
+  total: number;
+}
+
+export interface ClienteDuplicadoParams {
+  cpf?: string | null;
+  cnpj?: string | null;
+  excluirId?: string;
+}
+
 export const clientesService = {
-  list: async () =>
-    unwrap(
-      await supabase
-        .from("clientes")
-        .select("*")
-        .is("deleted_at", null)
-        .order("created_at", { ascending: false }),
-    ),
+  list: async (params: ClientesListParams = {}): Promise<ClientesListResult> => {
+    const {
+      busca,
+      tipo = "todos",
+      status = "todos",
+      ordenarPor = "created_at",
+      ordem = "desc",
+      pagina = 1,
+      porPagina = 10,
+    } = params;
+
+    let query = supabase.from("clientes").select("*", { count: "exact" }).is("deleted_at", null);
+
+    if (busca?.trim()) {
+      const termo = busca.trim();
+      const digitos = onlyDigits(termo);
+      const condicoes = [`nome.ilike.%${termo}%`, `email.ilike.%${termo}%`];
+      if (digitos) {
+        condicoes.push(
+          `cpf.ilike.%${digitos}%`,
+          `cnpj.ilike.%${digitos}%`,
+          `telefone.ilike.%${digitos}%`,
+        );
+      }
+      query = query.or(condicoes.join(","));
+    }
+
+    if (tipo !== "todos") query = query.eq("tipo_pessoa", tipo);
+    if (status === "ativos") query = query.eq("ativo", true);
+    if (status === "inativos") query = query.eq("ativo", false);
+
+    query = query.order(ordenarPor, { ascending: ordem === "asc" });
+
+    const from = (pagina - 1) * porPagina;
+    query = query.range(from, from + porPagina - 1);
+
+    const { data, error, count } = await query;
+    if (error) throw new Error(error.message);
+    return { data: (data ?? []) as Cliente[], total: count ?? 0 };
+  },
+
   get: async (id: string) => {
     const { data, error } = await supabase
       .from("clientes")
@@ -41,6 +102,49 @@ export const clientesService = {
       .maybeSingle();
     if (error) throw new Error(error.message);
     return data;
+  },
+
+  /** Retorna true se já existir outro cliente (não excluído) com o mesmo CPF ou CNPJ. */
+  checkDuplicado: async ({ cpf, cnpj, excluirId }: ClienteDuplicadoParams) => {
+    const documento = onlyDigits(cpf) || onlyDigits(cnpj);
+    if (!documento) return false;
+
+    let query = supabase
+      .from("clientes")
+      .select("id")
+      .is("deleted_at", null)
+      .or(`cpf.eq.${documento},cnpj.eq.${documento}`);
+
+    if (excluirId) query = query.neq("id", excluirId);
+
+    const { data, error } = await query.limit(1);
+    if (error) throw new Error(error.message);
+    return (data ?? []).length > 0;
+  },
+
+  create: async (payload: Database["public"]["Tables"]["clientes"]["Insert"]) => {
+    const { data, error } = await supabase.from("clientes").insert(payload).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  update: async (id: string, payload: Database["public"]["Tables"]["clientes"]["Update"]) => {
+    const { data, error } = await supabase
+      .from("clientes")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  softDelete: async (id: string) => {
+    const { error } = await supabase
+      .from("clientes")
+      .update({ deleted_at: new Date().toISOString() })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
   },
 };
 
