@@ -1,0 +1,161 @@
+import { supabase } from "@/integrations/supabase/client";
+
+export const queryKeys = {
+  clientes: ["clientes"] as const,
+  cliente: (id: string) => ["clientes", id] as const,
+  equipamentos: ["equipamentos"] as const,
+  ordens: ["ordens"] as const,
+  ordem: (id: string) => ["ordens", id] as const,
+  orcamentos: ["orcamentos"] as const,
+  orcamento: (id: string) => ["orcamentos", id] as const,
+  lancamentos: ["lancamentos"] as const,
+  categoriasFinanceiras: ["categorias_financeiras"] as const,
+  produtos: ["produtos"] as const,
+  categoriasProduto: ["categorias_produto"] as const,
+  fornecedores: ["fornecedores"] as const,
+  movimentacoes: ["movimentacoes"] as const,
+  agenda: ["agenda"] as const,
+  empresa: ["empresa"] as const,
+  usuarios: ["usuarios"] as const,
+};
+
+function unwrap<T>(res: { data: T | null; error: { message: string } | null }): T {
+  if (res.error) throw new Error(res.error.message);
+  return (res.data ?? ([] as unknown)) as T;
+}
+
+export const clientesService = {
+  list: async () =>
+    unwrap(
+      await supabase
+        .from("clientes")
+        .select("*")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false }),
+    ),
+  get: async (id: string) => {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("*, equipamentos(*)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+};
+
+export const equipamentosService = {
+  list: async () =>
+    unwrap(
+      await supabase
+        .from("equipamentos")
+        .select("*, clientes(id, nome)")
+        .is("deleted_at", null)
+        .order("created_at", { ascending: false }),
+    ),
+};
+
+export const ordensService = {
+  list: async () =>
+    unwrap(
+      await supabase
+        .from("ordens_servico")
+        .select("*, clientes(id, nome), equipamentos(id, tipo, marca, modelo)")
+        .is("deleted_at", null)
+        .order("numero", { ascending: false }),
+    ),
+  get: async (id: string) => {
+    const { data, error } = await supabase
+      .from("ordens_servico")
+      .select("*, clientes(*), equipamentos(*), os_eventos(*)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+};
+
+export const orcamentosService = {
+  list: async () =>
+    unwrap(
+      await supabase
+        .from("orcamentos")
+        .select("*, clientes(id, nome)")
+        .is("deleted_at", null)
+        .order("numero", { ascending: false }),
+    ),
+  get: async (id: string) => {
+    const { data, error } = await supabase
+      .from("orcamentos")
+      .select("*, clientes(*), orcamento_itens(*)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+};
+
+export const financeiroService = {
+  list: async (tipo?: "entrada" | "saida") => {
+    const base = supabase
+      .from("lancamentos")
+      .select("*, categorias_financeiras(id, nome), clientes(id, nome)")
+      .is("deleted_at", null);
+    const q = tipo ? base.eq("tipo", tipo) : base;
+    return unwrap(await q.order("data_vencimento", { ascending: false }));
+  },
+  categorias: async () =>
+    unwrap(await supabase.from("categorias_financeiras").select("*").order("nome")),
+};
+
+export const estoqueService = {
+  produtos: async () =>
+    unwrap(
+      await supabase
+        .from("produtos")
+        .select("*, categorias_produto(id, nome), fornecedores(id, nome)")
+        .is("deleted_at", null)
+        .order("nome"),
+    ),
+  categorias: async () =>
+    unwrap(await supabase.from("categorias_produto").select("*").order("nome")),
+  fornecedores: async () =>
+    unwrap(await supabase.from("fornecedores").select("*").is("deleted_at", null).order("nome")),
+  movimentacoes: async () =>
+    unwrap(
+      await supabase
+        .from("movimentacoes_estoque")
+        .select("*, produtos(id, nome, unidade)")
+        .order("created_at", { ascending: false })
+        .limit(100),
+    ),
+};
+
+export const agendaService = {
+  list: async () =>
+    unwrap(
+      await supabase
+        .from("agenda_eventos")
+        .select("*, clientes(id, nome)")
+        .is("deleted_at", null)
+        .order("inicio"),
+    ),
+};
+
+export const configService = {
+  empresa: async () => {
+    const { data, error } = await supabase.from("empresa").select("*").limit(1).maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+  usuarios: async () => {
+    const [{ data: profiles }, { data: roles }] = await Promise.all([
+      supabase.from("profiles").select("*").order("nome"),
+      supabase.from("user_roles").select("*"),
+    ]);
+    return (profiles ?? []).map((p) => ({
+      ...p,
+      roles: (roles ?? []).filter((r) => r.user_id === p.id).map((r) => r.role),
+    }));
+  },
+};
