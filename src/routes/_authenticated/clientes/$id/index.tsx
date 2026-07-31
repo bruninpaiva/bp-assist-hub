@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Pencil, UserX, Wrench, FileText, Receipt, History } from "lucide-react";
@@ -10,6 +9,7 @@ import { TableSkeleton } from "@/components/tables/TableSkeleton";
 import { EmptyState } from "@/components/common/EmptyState";
 import { StatusBadge } from "@/components/common/StatusBadge";
 import { DateDisplay } from "@/components/common/DateDisplay";
+import { DetailField } from "@/components/common/DetailField";
 import { clientesService, queryKeys } from "@/services/queries";
 import { tipoPessoaLabels } from "@/lib/labels";
 import { maskDocumento, maskTelefone, maskCEP } from "@/lib/masks";
@@ -21,16 +21,6 @@ export const Route = createFileRoute("/_authenticated/clientes/$id/")({
   }),
   component: ClienteDetalhePage,
 });
-
-function Campo({ label, value }: { label: string; value?: ReactNode }) {
-  const vazio = value === undefined || value === null || value === "";
-  return (
-    <div className="space-y-1">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-medium">{vazio ? "—" : value}</p>
-    </div>
-  );
-}
 
 function ClienteDetalhePage() {
   const { id } = Route.useParams();
@@ -88,27 +78,27 @@ function ClienteDetalhePage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {c.tipo_pessoa === "juridica" ? (
             <>
-              <Campo label="Razão social" value={c.razao_social} />
-              <Campo label="Nome fantasia" value={c.nome_fantasia} />
-              <Campo label="CNPJ" value={c.cnpj ? maskDocumento(c.cnpj) : null} />
-              <Campo label="Inscrição estadual" value={c.inscricao_estadual} />
+              <DetailField label="Razão social" value={c.razao_social} />
+              <DetailField label="Nome fantasia" value={c.nome_fantasia} />
+              <DetailField label="CNPJ" value={c.cnpj ? maskDocumento(c.cnpj) : null} />
+              <DetailField label="Inscrição estadual" value={c.inscricao_estadual} />
             </>
           ) : (
-            <Campo label="CPF" value={c.cpf ? maskDocumento(c.cpf) : null} />
+            <DetailField label="CPF" value={c.cpf ? maskDocumento(c.cpf) : null} />
           )}
-          <Campo label="E-mail" value={c.email} />
-          <Campo label="Telefone" value={c.telefone ? maskTelefone(c.telefone) : null} />
-          <Campo label="WhatsApp" value={c.whatsapp ? maskTelefone(c.whatsapp) : null} />
-          <Campo label="CEP" value={c.cep ? maskCEP(c.cep) : null} />
-          <Campo label="Endereço" value={endereco} />
-          <Campo label="Bairro" value={c.bairro} />
-          <Campo label="Complemento" value={c.complemento} />
-          <Campo label="Cidade / UF" value={cidadeUf} />
-          <Campo label="Cliente desde" value={<DateDisplay value={c.created_at} />} />
+          <DetailField label="E-mail" value={c.email} />
+          <DetailField label="Telefone" value={c.telefone ? maskTelefone(c.telefone) : null} />
+          <DetailField label="WhatsApp" value={c.whatsapp ? maskTelefone(c.whatsapp) : null} />
+          <DetailField label="CEP" value={c.cep ? maskCEP(c.cep) : null} />
+          <DetailField label="Endereço" value={endereco} />
+          <DetailField label="Bairro" value={c.bairro} />
+          <DetailField label="Complemento" value={c.complemento} />
+          <DetailField label="Cidade / UF" value={cidadeUf} />
+          <DetailField label="Cliente desde" value={<DateDisplay value={c.created_at} />} />
         </div>
         {c.observacoes ? (
           <div className="mt-4 border-t border-border/70 pt-4">
-            <Campo label="Observações" value={c.observacoes} />
+            <DetailField label="Observações" value={c.observacoes} />
           </div>
         ) : null}
       </Section>

@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { MoreHorizontal, Plus, Users } from "lucide-react";
+import { HardDrive, MoreHorizontal, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -32,81 +32,63 @@ import { DateDisplay } from "@/components/common/DateDisplay";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { DataTable, type DataTableColumn } from "@/components/tables/DataTable";
 import {
-  clientesService,
+  equipamentosService,
   queryKeys,
-  type ClientesOrdenarPor,
-  type ClientesStatus,
-  type ClientesTipo,
+  type EquipamentosStatus,
+  type EquipamentosTipo,
 } from "@/services/queries";
-import { maskDocumento } from "@/lib/masks";
-import { tipoPessoaLabels } from "@/lib/labels";
+import { statusEquipamentoLabels, tipoEquipamentoLabels } from "@/lib/labels";
 import { useDebounced } from "@/hooks/use-debounced";
-import type { Cliente } from "@/types/domain";
+import type { Equipamento } from "@/types/domain";
 
-export const Route = createFileRoute("/_authenticated/clientes/")({
+export const Route = createFileRoute("/_authenticated/equipamentos/")({
   head: () => ({
     meta: [
-      { title: "Clientes — BP Info Gestão" },
+      { title: "Equipamentos — BP Info Gestão" },
       {
         name: "description",
-        content:
-          "Cadastro de clientes pessoa física e jurídica com contatos, documentos e endereço.",
+        content: "Cadastro e acompanhamento técnico de notebooks, desktops e demais equipamentos.",
       },
-      { property: "og:title", content: "Clientes — BP Info Gestão" },
+      { property: "og:title", content: "Equipamentos — BP Info Gestão" },
       {
         property: "og:description",
-        content:
-          "Cadastro de clientes pessoa física e jurídica com contatos, documentos e endereço.",
+        content: "Cadastro e acompanhamento técnico de notebooks, desktops e demais equipamentos.",
       },
     ],
   }),
-  component: ClientesPage,
+  component: EquipamentosPage,
 });
+
+type EquipamentoRow = Equipamento & { clientes?: { nome: string } | null };
 
 const PAGE_SIZE = 10;
 
-const ORDENACAO_OPTIONS: {
-  value: string;
-  label: string;
-  ordenarPor: ClientesOrdenarPor;
-  ordem: "asc" | "desc";
-}[] = [
-  { value: "recentes", label: "Mais recentes", ordenarPor: "created_at", ordem: "desc" },
-  { value: "antigos", label: "Mais antigos", ordenarPor: "created_at", ordem: "asc" },
-  { value: "nome_asc", label: "Nome A-Z", ordenarPor: "nome", ordem: "asc" },
-  { value: "nome_desc", label: "Nome Z-A", ordenarPor: "nome", ordem: "desc" },
-];
-
-function ClientesPage() {
+function EquipamentosPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [busca, setBusca] = useState("");
-  const [tipo, setTipo] = useState<ClientesTipo>("todos");
-  const [status, setStatus] = useState<ClientesStatus>("todos");
-  const [ordenacao, setOrdenacao] = useState("recentes");
+  const [tipo, setTipo] = useState<EquipamentosTipo>("todos");
+  const [status, setStatus] = useState<EquipamentosStatus>("todos");
   const [pagina, setPagina] = useState(1);
-  const [excluindo, setExcluindo] = useState<Cliente | null>(null);
+  const [excluindo, setExcluindo] = useState<EquipamentoRow | null>(null);
 
   const buscaDebounced = useDebounced(busca, 300);
-  const ordem = ORDENACAO_OPTIONS.find((o) => o.value === ordenacao) ?? ORDENACAO_OPTIONS[0];
 
   const params = {
     busca: buscaDebounced,
     tipo,
     status,
-    ordenarPor: ordem.ordenarPor,
-    ordem: ordem.ordem,
     pagina,
     porPagina: PAGE_SIZE,
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.clientes(params),
-    queryFn: () => clientesService.list(params),
+    queryKey: queryKeys.equipamentos(params),
+    queryFn: () => equipamentosService.list(params),
   });
 
-  const clientes = data?.data ?? [];
+  const equipamentos = (data?.data ?? []) as EquipamentoRow[];
   const total = data?.total ?? 0;
   const totalPaginas = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
@@ -120,11 +102,11 @@ function ClientesPage() {
   const handleExcluir = async () => {
     if (!excluindo) return;
     try {
-      await clientesService.softDelete(excluindo.id);
-      await queryClient.invalidateQueries({ queryKey: ["clientes"] });
-      toast.success("Cliente excluído");
+      await equipamentosService.softDelete(excluindo.id);
+      await queryClient.invalidateQueries({ queryKey: ["equipamentos"] });
+      toast.success("Equipamento excluído");
     } catch (error) {
-      toast.error("Não foi possível excluir o cliente", {
+      toast.error("Não foi possível excluir o equipamento", {
         description: error instanceof Error ? error.message : undefined,
       });
     } finally {
@@ -132,62 +114,45 @@ function ClientesPage() {
     }
   };
 
-  const columns: DataTableColumn<Cliente>[] = [
+  const columns: DataTableColumn<EquipamentoRow>[] = [
     {
-      key: "nome",
-      header: "Nome",
-      cell: (c) => (
+      key: "equipamento",
+      header: "Equipamento",
+      cell: (e) => (
         <Link
-          to="/clientes/$id"
-          params={{ id: c.id }}
+          to="/equipamentos/$id"
+          params={{ id: e.id }}
           className="font-medium text-foreground hover:text-primary-glow hover:underline"
         >
-          {c.nome}
+          {[e.marca, e.modelo].filter(Boolean).join(" ") || tipoEquipamentoLabels[e.tipo]}
         </Link>
       ),
     },
     {
       key: "tipo",
       header: "Tipo",
-      cell: (c) => (
-        <StatusBadge
-          label={tipoPessoaLabels[c.tipo_pessoa]}
-          tone={c.tipo_pessoa === "juridica" ? "primary" : "info"}
-        />
-      ),
+      cell: (e) => <StatusBadge label={tipoEquipamentoLabels[e.tipo]} tone="info" />,
     },
     {
-      key: "documento",
-      header: "Documento",
-      cell: (c) => (
-        <span className="font-mono text-xs">
-          {c.cnpj ? maskDocumento(c.cnpj) : c.cpf ? maskDocumento(c.cpf) : "—"}
-        </span>
+      key: "serie",
+      header: "Série / Patrimônio",
+      cell: (e) => (
+        <span className="font-mono text-xs">{e.numero_serie || e.patrimonio || "—"}</span>
       ),
     },
-    {
-      key: "contato",
-      header: "Contato",
-      cell: (c) => (
-        <span className="text-sm text-muted-foreground">
-          {c.whatsapp || c.telefone || c.email || "—"}
-        </span>
-      ),
-    },
+    { key: "cliente", header: "Cliente", cell: (e) => e.clientes?.nome ?? "—" },
     {
       key: "status",
       header: "Status",
-      cell: (c) => (
-        <StatusBadge label={c.ativo ? "Ativo" : "Inativo"} tone={c.ativo ? "success" : "neutral"} />
-      ),
+      cell: (e) => <StatusBadge {...statusEquipamentoLabels[e.status]} />,
     },
     {
-      key: "cadastro",
-      header: "Cadastro",
+      key: "entrada",
+      header: "Entrada",
       className: "text-right",
-      cell: (c) => (
+      cell: (e) => (
         <span className="text-sm text-muted-foreground">
-          <DateDisplay value={c.created_at} />
+          <DateDisplay value={e.data_entrada} />
         </span>
       ),
     },
@@ -195,7 +160,7 @@ function ClientesPage() {
       key: "acoes",
       header: "",
       className: "text-right",
-      cell: (c) => (
+      cell: (e) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="size-8">
@@ -205,17 +170,19 @@ function ClientesPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onClick={() => void navigate({ to: "/clientes/$id", params: { id: c.id } })}
+              onClick={() => void navigate({ to: "/equipamentos/$id", params: { id: e.id } })}
             >
               Ver detalhes
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => void navigate({ to: "/clientes/$id/editar", params: { id: c.id } })}
+              onClick={() =>
+                void navigate({ to: "/equipamentos/$id/editar", params: { id: e.id } })
+              }
             >
               Editar
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => setExcluindo(c)}
+              onClick={() => setExcluindo(e)}
               className="text-destructive focus:text-destructive"
             >
               Excluir
@@ -229,24 +196,24 @@ function ClientesPage() {
   return (
     <>
       <PageHeader
-        title="Clientes"
-        description="Base de clientes da assistência técnica, com dados de contato e histórico."
+        title="Equipamentos"
+        description="Histórico técnico de cada equipamento: série, patrimônio, defeito informado e diagnóstico."
         actions={
           <Button asChild>
-            <Link to="/clientes/novo">
-              <Plus className="size-4" /> Novo cliente
+            <Link to="/equipamentos/novo">
+              <Plus className="size-4" /> Novo equipamento
             </Link>
           </Button>
         }
       />
 
       <Section
-        title="Lista de clientes"
+        title="Equipamentos cadastrados"
         actions={
           <SearchBar
             value={busca}
             onChange={resetPaginaEAtualiza(setBusca)}
-            placeholder="Buscar por nome, CPF, CNPJ, telefone ou e-mail"
+            placeholder="Buscar por série, cliente, marca, modelo ou patrimônio"
             className="sm:w-96"
           />
         }
@@ -254,40 +221,33 @@ function ClientesPage() {
         <div className="mb-4 flex flex-wrap gap-2">
           <Select
             value={tipo}
-            onValueChange={(v) => resetPaginaEAtualiza(setTipo)(v as ClientesTipo)}
+            onValueChange={(v) => resetPaginaEAtualiza(setTipo)(v as EquipamentosTipo)}
           >
-            <SelectTrigger className="h-9 w-40">
+            <SelectTrigger className="h-9 w-44">
               <SelectValue placeholder="Tipo" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os tipos</SelectItem>
-              <SelectItem value="fisica">Pessoa Física</SelectItem>
-              <SelectItem value="juridica">Pessoa Jurídica</SelectItem>
+              {Object.entries(tipoEquipamentoLabels).map(([value, label]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
 
           <Select
             value={status}
-            onValueChange={(v) => resetPaginaEAtualiza(setStatus)(v as ClientesStatus)}
+            onValueChange={(v) => resetPaginaEAtualiza(setStatus)(v as EquipamentosStatus)}
           >
-            <SelectTrigger className="h-9 w-36">
+            <SelectTrigger className="h-9 w-48">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="todos">Todos os status</SelectItem>
-              <SelectItem value="ativos">Ativos</SelectItem>
-              <SelectItem value="inativos">Inativos</SelectItem>
-            </SelectContent>
-          </Select>
-
-          <Select value={ordenacao} onValueChange={resetPaginaEAtualiza(setOrdenacao)}>
-            <SelectTrigger className="h-9 w-44">
-              <SelectValue placeholder="Ordenar por" />
-            </SelectTrigger>
-            <SelectContent>
-              {ORDENACAO_OPTIONS.map((o) => (
-                <SelectItem key={o.value} value={o.value}>
-                  {o.label}
+              {Object.entries(statusEquipamentoLabels).map(([value, { label }]) => (
+                <SelectItem key={value} value={value}>
+                  {label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -296,18 +256,18 @@ function ClientesPage() {
 
         <DataTable
           columns={columns}
-          data={clientes}
+          data={equipamentos}
           isLoading={isLoading}
-          getRowKey={(c) => c.id}
-          emptyIcon={Users}
-          emptyTitle="Nenhum cliente encontrado"
-          emptyDescription="Ajuste a busca ou os filtros, ou cadastre um novo cliente."
+          getRowKey={(e) => e.id}
+          emptyIcon={HardDrive}
+          emptyTitle="Nenhum equipamento encontrado"
+          emptyDescription="Ajuste a busca ou os filtros, ou cadastre um novo equipamento."
         />
 
         {!isLoading && total > PAGE_SIZE ? (
           <div className="mt-4 flex items-center justify-between gap-4">
             <p className="text-xs text-muted-foreground">
-              {total} cliente{total === 1 ? "" : "s"} · página {pagina} de {totalPaginas}
+              {total} equipamento{total === 1 ? "" : "s"} · página {pagina} de {totalPaginas}
             </p>
             <Pagination className="mx-0 w-auto">
               <PaginationContent>
@@ -342,8 +302,8 @@ function ClientesPage() {
       <ConfirmDialog
         open={excluindo !== null}
         onOpenChange={(open) => !open && setExcluindo(null)}
-        title="Excluir cliente"
-        description={`Tem certeza que deseja excluir "${excluindo?.nome}"? O cliente deixará de aparecer nas listagens, mas o histórico é preservado.`}
+        title="Excluir equipamento"
+        description={`Tem certeza que deseja excluir "${[excluindo?.marca, excluindo?.modelo].filter(Boolean).join(" ") || "este equipamento"}"? Ele deixará de aparecer nas listagens, mas o histórico é preservado.`}
         confirmLabel="Excluir"
         variant="destructive"
         onConfirm={() => void handleExcluir()}

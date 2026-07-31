@@ -15,15 +15,25 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAgendaRouteImport } from './routes/_authenticated/agenda'
 import { Route as AuthenticatedConfiguracoesRouteImport } from './routes/_authenticated/configuracoes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedEquipamentosRouteImport } from './routes/_authenticated/equipamentos'
 import { Route as AuthenticatedEstoqueRouteImport } from './routes/_authenticated/estoque'
 import { Route as AuthenticatedFinanceiroRouteImport } from './routes/_authenticated/financeiro'
-import { Route as AuthenticatedOrcamentosRouteImport } from './routes/_authenticated/orcamentos'
-import { Route as AuthenticatedOrdensRouteImport } from './routes/_authenticated/ordens'
+import { Route as OrcamentoTokenRouteImport } from './routes/orcamento/$token'
 import { Route as AuthenticatedClientesIndexRouteImport } from './routes/_authenticated/clientes/index'
 import { Route as AuthenticatedClientesNovoRouteImport } from './routes/_authenticated/clientes/novo'
+import { Route as AuthenticatedEquipamentosIndexRouteImport } from './routes/_authenticated/equipamentos/index'
+import { Route as AuthenticatedEquipamentosNovoRouteImport } from './routes/_authenticated/equipamentos/novo'
+import { Route as AuthenticatedOrcamentosIndexRouteImport } from './routes/_authenticated/orcamentos/index'
+import { Route as AuthenticatedOrcamentosNovoRouteImport } from './routes/_authenticated/orcamentos/novo'
+import { Route as AuthenticatedOrdensIndexRouteImport } from './routes/_authenticated/ordens/index'
+import { Route as AuthenticatedOrdensNovoRouteImport } from './routes/_authenticated/ordens/novo'
 import { Route as AuthenticatedClientesIdIndexRouteImport } from './routes/_authenticated/clientes/$id/index'
 import { Route as AuthenticatedClientesIdEditarRouteImport } from './routes/_authenticated/clientes/$id/editar'
+import { Route as AuthenticatedEquipamentosIdIndexRouteImport } from './routes/_authenticated/equipamentos/$id/index'
+import { Route as AuthenticatedEquipamentosIdEditarRouteImport } from './routes/_authenticated/equipamentos/$id/editar'
+import { Route as AuthenticatedOrcamentosIdIndexRouteImport } from './routes/_authenticated/orcamentos/$id/index'
+import { Route as AuthenticatedOrcamentosIdEditarRouteImport } from './routes/_authenticated/orcamentos/$id/editar'
+import { Route as AuthenticatedOrdensIdIndexRouteImport } from './routes/_authenticated/ordens/$id/index'
+import { Route as AuthenticatedOrdensIdEditarRouteImport } from './routes/_authenticated/ordens/$id/editar'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -55,12 +65,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedEquipamentosRoute =
-  AuthenticatedEquipamentosRouteImport.update({
-    id: '/equipamentos',
-    path: '/equipamentos',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
 const AuthenticatedEstoqueRoute = AuthenticatedEstoqueRouteImport.update({
   id: '/estoque',
   path: '/estoque',
@@ -71,15 +75,10 @@ const AuthenticatedFinanceiroRoute = AuthenticatedFinanceiroRouteImport.update({
   path: '/financeiro',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedOrcamentosRoute = AuthenticatedOrcamentosRouteImport.update({
-  id: '/orcamentos',
-  path: '/orcamentos',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const AuthenticatedOrdensRoute = AuthenticatedOrdensRouteImport.update({
-  id: '/ordens',
-  path: '/ordens',
-  getParentRoute: () => AuthenticatedRouteRoute,
+const OrcamentoTokenRoute = OrcamentoTokenRouteImport.update({
+  id: '/orcamento/$token',
+  path: '/orcamento/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedClientesIndexRoute =
   AuthenticatedClientesIndexRouteImport.update({
@@ -93,6 +92,41 @@ const AuthenticatedClientesNovoRoute =
     path: '/clientes/novo',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEquipamentosIndexRoute =
+  AuthenticatedEquipamentosIndexRouteImport.update({
+    id: '/equipamentos/',
+    path: '/equipamentos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEquipamentosNovoRoute =
+  AuthenticatedEquipamentosNovoRouteImport.update({
+    id: '/equipamentos/novo',
+    path: '/equipamentos/novo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentosIndexRoute =
+  AuthenticatedOrcamentosIndexRouteImport.update({
+    id: '/orcamentos/',
+    path: '/orcamentos/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentosNovoRoute =
+  AuthenticatedOrcamentosNovoRouteImport.update({
+    id: '/orcamentos/novo',
+    path: '/orcamentos/novo',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensIndexRoute =
+  AuthenticatedOrdensIndexRouteImport.update({
+    id: '/ordens/',
+    path: '/ordens/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensNovoRoute = AuthenticatedOrdensNovoRouteImport.update({
+  id: '/ordens/novo',
+  path: '/ordens/novo',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedClientesIdIndexRoute =
   AuthenticatedClientesIdIndexRouteImport.update({
     id: '/clientes/$id/',
@@ -105,6 +139,42 @@ const AuthenticatedClientesIdEditarRoute =
     path: '/clientes/$id/editar',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEquipamentosIdIndexRoute =
+  AuthenticatedEquipamentosIdIndexRouteImport.update({
+    id: '/equipamentos/$id/',
+    path: '/equipamentos/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedEquipamentosIdEditarRoute =
+  AuthenticatedEquipamentosIdEditarRouteImport.update({
+    id: '/equipamentos/$id/editar',
+    path: '/equipamentos/$id/editar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentosIdIndexRoute =
+  AuthenticatedOrcamentosIdIndexRouteImport.update({
+    id: '/orcamentos/$id/',
+    path: '/orcamentos/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrcamentosIdEditarRoute =
+  AuthenticatedOrcamentosIdEditarRouteImport.update({
+    id: '/orcamentos/$id/editar',
+    path: '/orcamentos/$id/editar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensIdIndexRoute =
+  AuthenticatedOrdensIdIndexRouteImport.update({
+    id: '/ordens/$id/',
+    path: '/ordens/$id/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedOrdensIdEditarRoute =
+  AuthenticatedOrdensIdEditarRouteImport.update({
+    id: '/ordens/$id/editar',
+    path: '/ordens/$id/editar',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -112,15 +182,25 @@ export interface FileRoutesByFullPath {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
-  '/orcamentos': typeof AuthenticatedOrcamentosRoute
-  '/ordens': typeof AuthenticatedOrdensRoute
+  '/orcamento/$token': typeof OrcamentoTokenRoute
   '/clientes/novo': typeof AuthenticatedClientesNovoRoute
+  '/equipamentos/novo': typeof AuthenticatedEquipamentosNovoRoute
+  '/orcamentos/novo': typeof AuthenticatedOrcamentosNovoRoute
+  '/ordens/novo': typeof AuthenticatedOrdensNovoRoute
   '/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/orcamentos/': typeof AuthenticatedOrcamentosIndexRoute
+  '/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/clientes/$id/editar': typeof AuthenticatedClientesIdEditarRoute
+  '/equipamentos/$id/editar': typeof AuthenticatedEquipamentosIdEditarRoute
+  '/orcamentos/$id/editar': typeof AuthenticatedOrcamentosIdEditarRoute
+  '/ordens/$id/editar': typeof AuthenticatedOrdensIdEditarRoute
   '/clientes/$id/': typeof AuthenticatedClientesIdIndexRoute
+  '/equipamentos/$id/': typeof AuthenticatedEquipamentosIdIndexRoute
+  '/orcamentos/$id/': typeof AuthenticatedOrcamentosIdIndexRoute
+  '/ordens/$id/': typeof AuthenticatedOrdensIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,15 +208,25 @@ export interface FileRoutesByTo {
   '/agenda': typeof AuthenticatedAgendaRoute
   '/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/estoque': typeof AuthenticatedEstoqueRoute
   '/financeiro': typeof AuthenticatedFinanceiroRoute
-  '/orcamentos': typeof AuthenticatedOrcamentosRoute
-  '/ordens': typeof AuthenticatedOrdensRoute
+  '/orcamento/$token': typeof OrcamentoTokenRoute
   '/clientes/novo': typeof AuthenticatedClientesNovoRoute
+  '/equipamentos/novo': typeof AuthenticatedEquipamentosNovoRoute
+  '/orcamentos/novo': typeof AuthenticatedOrcamentosNovoRoute
+  '/ordens/novo': typeof AuthenticatedOrdensNovoRoute
   '/clientes': typeof AuthenticatedClientesIndexRoute
+  '/equipamentos': typeof AuthenticatedEquipamentosIndexRoute
+  '/orcamentos': typeof AuthenticatedOrcamentosIndexRoute
+  '/ordens': typeof AuthenticatedOrdensIndexRoute
   '/clientes/$id/editar': typeof AuthenticatedClientesIdEditarRoute
+  '/equipamentos/$id/editar': typeof AuthenticatedEquipamentosIdEditarRoute
+  '/orcamentos/$id/editar': typeof AuthenticatedOrcamentosIdEditarRoute
+  '/ordens/$id/editar': typeof AuthenticatedOrdensIdEditarRoute
   '/clientes/$id': typeof AuthenticatedClientesIdIndexRoute
+  '/equipamentos/$id': typeof AuthenticatedEquipamentosIdIndexRoute
+  '/orcamentos/$id': typeof AuthenticatedOrcamentosIdIndexRoute
+  '/ordens/$id': typeof AuthenticatedOrdensIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,15 +236,25 @@ export interface FileRoutesById {
   '/_authenticated/agenda': typeof AuthenticatedAgendaRoute
   '/_authenticated/configuracoes': typeof AuthenticatedConfiguracoesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/equipamentos': typeof AuthenticatedEquipamentosRoute
   '/_authenticated/estoque': typeof AuthenticatedEstoqueRoute
   '/_authenticated/financeiro': typeof AuthenticatedFinanceiroRoute
-  '/_authenticated/orcamentos': typeof AuthenticatedOrcamentosRoute
-  '/_authenticated/ordens': typeof AuthenticatedOrdensRoute
+  '/orcamento/$token': typeof OrcamentoTokenRoute
   '/_authenticated/clientes/novo': typeof AuthenticatedClientesNovoRoute
+  '/_authenticated/equipamentos/novo': typeof AuthenticatedEquipamentosNovoRoute
+  '/_authenticated/orcamentos/novo': typeof AuthenticatedOrcamentosNovoRoute
+  '/_authenticated/ordens/novo': typeof AuthenticatedOrdensNovoRoute
   '/_authenticated/clientes/': typeof AuthenticatedClientesIndexRoute
+  '/_authenticated/equipamentos/': typeof AuthenticatedEquipamentosIndexRoute
+  '/_authenticated/orcamentos/': typeof AuthenticatedOrcamentosIndexRoute
+  '/_authenticated/ordens/': typeof AuthenticatedOrdensIndexRoute
   '/_authenticated/clientes/$id/editar': typeof AuthenticatedClientesIdEditarRoute
+  '/_authenticated/equipamentos/$id/editar': typeof AuthenticatedEquipamentosIdEditarRoute
+  '/_authenticated/orcamentos/$id/editar': typeof AuthenticatedOrcamentosIdEditarRoute
+  '/_authenticated/ordens/$id/editar': typeof AuthenticatedOrdensIdEditarRoute
   '/_authenticated/clientes/$id/': typeof AuthenticatedClientesIdIndexRoute
+  '/_authenticated/equipamentos/$id/': typeof AuthenticatedEquipamentosIdIndexRoute
+  '/_authenticated/orcamentos/$id/': typeof AuthenticatedOrcamentosIdIndexRoute
+  '/_authenticated/ordens/$id/': typeof AuthenticatedOrdensIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -164,15 +264,25 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/configuracoes'
     | '/dashboard'
-    | '/equipamentos'
     | '/estoque'
     | '/financeiro'
-    | '/orcamentos'
-    | '/ordens'
+    | '/orcamento/$token'
     | '/clientes/novo'
+    | '/equipamentos/novo'
+    | '/orcamentos/novo'
+    | '/ordens/novo'
     | '/clientes/'
+    | '/equipamentos/'
+    | '/orcamentos/'
+    | '/ordens/'
     | '/clientes/$id/editar'
+    | '/equipamentos/$id/editar'
+    | '/orcamentos/$id/editar'
+    | '/ordens/$id/editar'
     | '/clientes/$id/'
+    | '/equipamentos/$id/'
+    | '/orcamentos/$id/'
+    | '/ordens/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,15 +290,25 @@ export interface FileRouteTypes {
     | '/agenda'
     | '/configuracoes'
     | '/dashboard'
-    | '/equipamentos'
     | '/estoque'
     | '/financeiro'
+    | '/orcamento/$token'
+    | '/clientes/novo'
+    | '/equipamentos/novo'
+    | '/orcamentos/novo'
+    | '/ordens/novo'
+    | '/clientes'
+    | '/equipamentos'
     | '/orcamentos'
     | '/ordens'
-    | '/clientes/novo'
-    | '/clientes'
     | '/clientes/$id/editar'
+    | '/equipamentos/$id/editar'
+    | '/orcamentos/$id/editar'
+    | '/ordens/$id/editar'
     | '/clientes/$id'
+    | '/equipamentos/$id'
+    | '/orcamentos/$id'
+    | '/ordens/$id'
   id:
     | '__root__'
     | '/'
@@ -197,21 +317,32 @@ export interface FileRouteTypes {
     | '/_authenticated/agenda'
     | '/_authenticated/configuracoes'
     | '/_authenticated/dashboard'
-    | '/_authenticated/equipamentos'
     | '/_authenticated/estoque'
     | '/_authenticated/financeiro'
-    | '/_authenticated/orcamentos'
-    | '/_authenticated/ordens'
+    | '/orcamento/$token'
     | '/_authenticated/clientes/novo'
+    | '/_authenticated/equipamentos/novo'
+    | '/_authenticated/orcamentos/novo'
+    | '/_authenticated/ordens/novo'
     | '/_authenticated/clientes/'
+    | '/_authenticated/equipamentos/'
+    | '/_authenticated/orcamentos/'
+    | '/_authenticated/ordens/'
     | '/_authenticated/clientes/$id/editar'
+    | '/_authenticated/equipamentos/$id/editar'
+    | '/_authenticated/orcamentos/$id/editar'
+    | '/_authenticated/ordens/$id/editar'
     | '/_authenticated/clientes/$id/'
+    | '/_authenticated/equipamentos/$id/'
+    | '/_authenticated/orcamentos/$id/'
+    | '/_authenticated/ordens/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  OrcamentoTokenRoute: typeof OrcamentoTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -258,13 +389,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/equipamentos': {
-      id: '/_authenticated/equipamentos'
-      path: '/equipamentos'
-      fullPath: '/equipamentos'
-      preLoaderRoute: typeof AuthenticatedEquipamentosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/estoque': {
       id: '/_authenticated/estoque'
       path: '/estoque'
@@ -279,19 +403,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFinanceiroRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/orcamentos': {
-      id: '/_authenticated/orcamentos'
-      path: '/orcamentos'
-      fullPath: '/orcamentos'
-      preLoaderRoute: typeof AuthenticatedOrcamentosRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/ordens': {
-      id: '/_authenticated/ordens'
-      path: '/ordens'
-      fullPath: '/ordens'
-      preLoaderRoute: typeof AuthenticatedOrdensRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/orcamento/$token': {
+      id: '/orcamento/$token'
+      path: '/orcamento/$token'
+      fullPath: '/orcamento/$token'
+      preLoaderRoute: typeof OrcamentoTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/clientes/': {
       id: '/_authenticated/clientes/'
@@ -305,6 +422,48 @@ declare module '@tanstack/react-router' {
       path: '/clientes/novo'
       fullPath: '/clientes/novo'
       preLoaderRoute: typeof AuthenticatedClientesNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/equipamentos/': {
+      id: '/_authenticated/equipamentos/'
+      path: '/equipamentos'
+      fullPath: '/equipamentos/'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/equipamentos/novo': {
+      id: '/_authenticated/equipamentos/novo'
+      path: '/equipamentos/novo'
+      fullPath: '/equipamentos/novo'
+      preLoaderRoute: typeof AuthenticatedEquipamentosNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamentos/': {
+      id: '/_authenticated/orcamentos/'
+      path: '/orcamentos'
+      fullPath: '/orcamentos/'
+      preLoaderRoute: typeof AuthenticatedOrcamentosIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamentos/novo': {
+      id: '/_authenticated/orcamentos/novo'
+      path: '/orcamentos/novo'
+      fullPath: '/orcamentos/novo'
+      preLoaderRoute: typeof AuthenticatedOrcamentosNovoRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/': {
+      id: '/_authenticated/ordens/'
+      path: '/ordens'
+      fullPath: '/ordens/'
+      preLoaderRoute: typeof AuthenticatedOrdensIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/novo': {
+      id: '/_authenticated/ordens/novo'
+      path: '/ordens/novo'
+      fullPath: '/ordens/novo'
+      preLoaderRoute: typeof AuthenticatedOrdensNovoRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/clientes/$id/': {
@@ -321,6 +480,48 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedClientesIdEditarRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/equipamentos/$id/': {
+      id: '/_authenticated/equipamentos/$id/'
+      path: '/equipamentos/$id'
+      fullPath: '/equipamentos/$id/'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/equipamentos/$id/editar': {
+      id: '/_authenticated/equipamentos/$id/editar'
+      path: '/equipamentos/$id/editar'
+      fullPath: '/equipamentos/$id/editar'
+      preLoaderRoute: typeof AuthenticatedEquipamentosIdEditarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamentos/$id/': {
+      id: '/_authenticated/orcamentos/$id/'
+      path: '/orcamentos/$id'
+      fullPath: '/orcamentos/$id/'
+      preLoaderRoute: typeof AuthenticatedOrcamentosIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orcamentos/$id/editar': {
+      id: '/_authenticated/orcamentos/$id/editar'
+      path: '/orcamentos/$id/editar'
+      fullPath: '/orcamentos/$id/editar'
+      preLoaderRoute: typeof AuthenticatedOrcamentosIdEditarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/$id/': {
+      id: '/_authenticated/ordens/$id/'
+      path: '/ordens/$id'
+      fullPath: '/ordens/$id/'
+      preLoaderRoute: typeof AuthenticatedOrdensIdIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ordens/$id/editar': {
+      id: '/_authenticated/ordens/$id/editar'
+      path: '/ordens/$id/editar'
+      fullPath: '/ordens/$id/editar'
+      preLoaderRoute: typeof AuthenticatedOrdensIdEditarRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -328,30 +529,49 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAgendaRoute: typeof AuthenticatedAgendaRoute
   AuthenticatedConfiguracoesRoute: typeof AuthenticatedConfiguracoesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedEquipamentosRoute: typeof AuthenticatedEquipamentosRoute
   AuthenticatedEstoqueRoute: typeof AuthenticatedEstoqueRoute
   AuthenticatedFinanceiroRoute: typeof AuthenticatedFinanceiroRoute
-  AuthenticatedOrcamentosRoute: typeof AuthenticatedOrcamentosRoute
-  AuthenticatedOrdensRoute: typeof AuthenticatedOrdensRoute
   AuthenticatedClientesNovoRoute: typeof AuthenticatedClientesNovoRoute
+  AuthenticatedEquipamentosNovoRoute: typeof AuthenticatedEquipamentosNovoRoute
+  AuthenticatedOrcamentosNovoRoute: typeof AuthenticatedOrcamentosNovoRoute
+  AuthenticatedOrdensNovoRoute: typeof AuthenticatedOrdensNovoRoute
   AuthenticatedClientesIndexRoute: typeof AuthenticatedClientesIndexRoute
+  AuthenticatedEquipamentosIndexRoute: typeof AuthenticatedEquipamentosIndexRoute
+  AuthenticatedOrcamentosIndexRoute: typeof AuthenticatedOrcamentosIndexRoute
+  AuthenticatedOrdensIndexRoute: typeof AuthenticatedOrdensIndexRoute
   AuthenticatedClientesIdEditarRoute: typeof AuthenticatedClientesIdEditarRoute
+  AuthenticatedEquipamentosIdEditarRoute: typeof AuthenticatedEquipamentosIdEditarRoute
+  AuthenticatedOrcamentosIdEditarRoute: typeof AuthenticatedOrcamentosIdEditarRoute
+  AuthenticatedOrdensIdEditarRoute: typeof AuthenticatedOrdensIdEditarRoute
   AuthenticatedClientesIdIndexRoute: typeof AuthenticatedClientesIdIndexRoute
+  AuthenticatedEquipamentosIdIndexRoute: typeof AuthenticatedEquipamentosIdIndexRoute
+  AuthenticatedOrcamentosIdIndexRoute: typeof AuthenticatedOrcamentosIdIndexRoute
+  AuthenticatedOrdensIdIndexRoute: typeof AuthenticatedOrdensIdIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAgendaRoute: AuthenticatedAgendaRoute,
   AuthenticatedConfiguracoesRoute: AuthenticatedConfiguracoesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedEquipamentosRoute: AuthenticatedEquipamentosRoute,
   AuthenticatedEstoqueRoute: AuthenticatedEstoqueRoute,
   AuthenticatedFinanceiroRoute: AuthenticatedFinanceiroRoute,
-  AuthenticatedOrcamentosRoute: AuthenticatedOrcamentosRoute,
-  AuthenticatedOrdensRoute: AuthenticatedOrdensRoute,
   AuthenticatedClientesNovoRoute: AuthenticatedClientesNovoRoute,
+  AuthenticatedEquipamentosNovoRoute: AuthenticatedEquipamentosNovoRoute,
+  AuthenticatedOrcamentosNovoRoute: AuthenticatedOrcamentosNovoRoute,
+  AuthenticatedOrdensNovoRoute: AuthenticatedOrdensNovoRoute,
   AuthenticatedClientesIndexRoute: AuthenticatedClientesIndexRoute,
+  AuthenticatedEquipamentosIndexRoute: AuthenticatedEquipamentosIndexRoute,
+  AuthenticatedOrcamentosIndexRoute: AuthenticatedOrcamentosIndexRoute,
+  AuthenticatedOrdensIndexRoute: AuthenticatedOrdensIndexRoute,
   AuthenticatedClientesIdEditarRoute: AuthenticatedClientesIdEditarRoute,
+  AuthenticatedEquipamentosIdEditarRoute:
+    AuthenticatedEquipamentosIdEditarRoute,
+  AuthenticatedOrcamentosIdEditarRoute: AuthenticatedOrcamentosIdEditarRoute,
+  AuthenticatedOrdensIdEditarRoute: AuthenticatedOrdensIdEditarRoute,
   AuthenticatedClientesIdIndexRoute: AuthenticatedClientesIdIndexRoute,
+  AuthenticatedEquipamentosIdIndexRoute: AuthenticatedEquipamentosIdIndexRoute,
+  AuthenticatedOrcamentosIdIndexRoute: AuthenticatedOrcamentosIdIndexRoute,
+  AuthenticatedOrdensIdIndexRoute: AuthenticatedOrdensIdIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -361,6 +581,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  OrcamentoTokenRoute: OrcamentoTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

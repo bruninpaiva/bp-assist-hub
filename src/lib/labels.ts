@@ -1,17 +1,23 @@
 import type {
+  AcaoAprovacaoOrcamento,
   AppRole,
+  CategoriaFoto,
   Prioridade,
+  StatusEquipamento,
   StatusLancamento,
-  StatusOS,
+  StatusOrdemServico,
   StatusOrcamento,
+  StatusOS,
   TipoAgenda,
   TipoEquipamento,
+  TipoItemOrcamento,
   TipoMovimentacao,
   TipoPessoa,
 } from "@/types/domain";
 
 type Tone = "neutral" | "info" | "success" | "warning" | "danger" | "primary";
 
+/** @deprecated Mantido só pelas telas de exemplo (Dashboard, Configurações). Ordens de Serviço usa statusOrdemServicoLabels. */
 export const statusOSLabels: Record<StatusOS, { label: string; tone: Tone }> = {
   aberta: { label: "Aberta", tone: "info" },
   em_analise: { label: "Em análise", tone: "primary" },
@@ -23,9 +29,22 @@ export const statusOSLabels: Record<StatusOS, { label: string; tone: Tone }> = {
   cancelada: { label: "Cancelada", tone: "danger" },
 };
 
+export const statusOrdemServicoLabels: Record<StatusOrdemServico, { label: string; tone: Tone }> = {
+  recebido: { label: "Recebido", tone: "info" },
+  em_analise: { label: "Em análise", tone: "primary" },
+  aguardando_orcamento: { label: "Aguardando orçamento", tone: "warning" },
+  aguardando_aprovacao: { label: "Aguardando aprovação", tone: "warning" },
+  aguardando_peca: { label: "Aguardando peça", tone: "warning" },
+  em_manutencao: { label: "Em manutenção", tone: "primary" },
+  teste: { label: "Teste", tone: "primary" },
+  pronto: { label: "Pronto", tone: "success" },
+  entregue: { label: "Entregue", tone: "success" },
+  cancelado: { label: "Cancelado", tone: "danger" },
+};
+
 export const prioridadeLabels: Record<Prioridade, { label: string; tone: Tone }> = {
   baixa: { label: "Baixa", tone: "neutral" },
-  media: { label: "Média", tone: "info" },
+  media: { label: "Normal", tone: "info" },
   alta: { label: "Alta", tone: "warning" },
   urgente: { label: "Urgente", tone: "danger" },
 };
@@ -34,8 +53,10 @@ export const statusOrcamentoLabels: Record<StatusOrcamento, { label: string; ton
   rascunho: { label: "Rascunho", tone: "neutral" },
   enviado: { label: "Enviado", tone: "info" },
   aprovado: { label: "Aprovado", tone: "success" },
-  recusado: { label: "Recusado", tone: "danger" },
+  // O valor do enum continua "recusado" (banco não foi quebrado); só o rótulo mudou.
+  recusado: { label: "Reprovado", tone: "danger" },
   expirado: { label: "Expirado", tone: "warning" },
+  cancelado: { label: "Cancelado", tone: "neutral" },
 };
 
 export const statusLancamentoLabels: Record<StatusLancamento, { label: string; tone: Tone }> = {
@@ -43,6 +64,36 @@ export const statusLancamentoLabels: Record<StatusLancamento, { label: string; t
   pago: { label: "Pago", tone: "success" },
   atrasado: { label: "Atrasado", tone: "danger" },
   cancelado: { label: "Cancelado", tone: "neutral" },
+};
+
+export const statusEquipamentoLabels: Record<StatusEquipamento, { label: string; tone: Tone }> = {
+  recebido: { label: "Recebido", tone: "info" },
+  em_analise: { label: "Em análise", tone: "primary" },
+  aguardando_orcamento: { label: "Aguardando orçamento", tone: "warning" },
+  aguardando_aprovacao: { label: "Aguardando aprovação", tone: "warning" },
+  aguardando_peca: { label: "Aguardando peça", tone: "warning" },
+  em_manutencao: { label: "Em manutenção", tone: "primary" },
+  pronto: { label: "Pronto", tone: "success" },
+  entregue: { label: "Entregue", tone: "success" },
+  cancelado: { label: "Cancelado", tone: "danger" },
+};
+
+export const tipoItemOrcamentoLabels: Record<TipoItemOrcamento, string> = {
+  produto: "Produto",
+  servico: "Serviço",
+};
+
+export const acaoAprovacaoLabels: Record<AcaoAprovacaoOrcamento, { label: string; tone: Tone }> = {
+  aprovado: { label: "Aprovado pelo cliente", tone: "success" },
+  recusado: { label: "Reprovado pelo cliente", tone: "danger" },
+  alteracao_solicitada: { label: "Alteração solicitada", tone: "warning" },
+};
+
+export const categoriaFotoLabels: Record<CategoriaFoto, string> = {
+  entrada: "Entrada",
+  durante_manutencao: "Durante manutenção",
+  final: "Final",
+  entrega: "Entrega",
 };
 
 export const tipoEquipamentoLabels: Record<TipoEquipamento, string> = {
