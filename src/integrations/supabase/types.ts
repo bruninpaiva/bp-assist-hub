@@ -694,36 +694,83 @@ export type Database = {
           },
         ]
       }
-      orcamento_itens: {
+      orcamento_eventos: {
         Row: {
           created_at: string
-          descricao: string
+          descricao: string | null
           id: string
-          item: string | null
           orcamento_id: string
-          ordem: number
-          preco_unitario: number
-          quantidade: number
+          status: Database["public"]["Enums"]["status_orcamento"] | null
+          titulo: string
+          usuario_id: string | null
         }
         Insert: {
           created_at?: string
-          descricao: string
+          descricao?: string | null
           id?: string
-          item?: string | null
           orcamento_id: string
-          ordem?: number
-          preco_unitario?: number
-          quantidade?: number
+          status?: Database["public"]["Enums"]["status_orcamento"] | null
+          titulo: string
+          usuario_id?: string | null
         }
         Update: {
           created_at?: string
+          descricao?: string | null
+          id?: string
+          orcamento_id?: string
+          status?: Database["public"]["Enums"]["status_orcamento"] | null
+          titulo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_eventos_orcamento_id_fkey"
+            columns: ["orcamento_id"]
+            isOneToOne: false
+            referencedRelation: "orcamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orcamento_itens: {
+        Row: {
+          created_at: string
+          desconto: number
+          descricao: string
+          id: string
+          orcamento_id: string
+          ordem: number
+          quantidade: number
+          subtotal: number | null
+          tipo: Database["public"]["Enums"]["tipo_item_orcamento"]
+          updated_at: string
+          valor_unitario: number
+        }
+        Insert: {
+          created_at?: string
+          desconto?: number
+          descricao: string
+          id?: string
+          orcamento_id: string
+          ordem?: number
+          quantidade?: number
+          subtotal?: number | null
+          tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
+          updated_at?: string
+          valor_unitario?: number
+        }
+        Update: {
+          created_at?: string
+          desconto?: number
           descricao?: string
           id?: string
-          item?: string | null
           orcamento_id?: string
           ordem?: number
-          preco_unitario?: number
           quantidade?: number
+          subtotal?: number | null
+          tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
+          updated_at?: string
+          valor_unitario?: number
         }
         Relationships: [
           {
@@ -746,12 +793,14 @@ export type Database = {
           data_emissao: string
           deleted_at: string | null
           desconto: number
+          equipamento_id: string | null
           id: string
           numero: number
           observacoes: string | null
-          os_id: string | null
+          os_id: string
           prazo_entrega: string | null
           status: Database["public"]["Enums"]["status_orcamento"]
+          subtotal: number
           titulo: string | null
           total: number
           updated_at: string
@@ -767,12 +816,14 @@ export type Database = {
           data_emissao?: string
           deleted_at?: string | null
           desconto?: number
+          equipamento_id?: string | null
           id?: string
           numero?: number
           observacoes?: string | null
-          os_id?: string | null
+          os_id: string
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
+          subtotal?: number
           titulo?: string | null
           total?: number
           updated_at?: string
@@ -788,12 +839,14 @@ export type Database = {
           data_emissao?: string
           deleted_at?: string | null
           desconto?: number
+          equipamento_id?: string | null
           id?: string
           numero?: number
           observacoes?: string | null
-          os_id?: string | null
+          os_id?: string
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
+          subtotal?: number
           titulo?: string | null
           total?: number
           updated_at?: string
@@ -805,6 +858,13 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orcamentos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
             referencedColumns: ["id"]
           },
           {
@@ -1113,6 +1173,7 @@ export type Database = {
         | "aprovado"
         | "recusado"
         | "expirado"
+        | "cancelado"
       status_ordem_servico:
         | "recebido"
         | "em_analise"
@@ -1149,6 +1210,7 @@ export type Database = {
         | "roteador"
         | "nobreak"
         | "outros"
+      tipo_item_orcamento: "produto" | "servico"
       tipo_lancamento: "entrada" | "saida"
       tipo_movimentacao: "entrada" | "saida" | "ajuste"
       tipo_pessoa: "fisica" | "juridica"
@@ -1300,6 +1362,7 @@ export const Constants = {
         "aprovado",
         "recusado",
         "expirado",
+        "cancelado",
       ],
       status_ordem_servico: [
         "recebido",
@@ -1341,6 +1404,7 @@ export const Constants = {
         "nobreak",
         "outros",
       ],
+      tipo_item_orcamento: ["produto", "servico"],
       tipo_lancamento: ["entrada", "saida"],
       tipo_movimentacao: ["entrada", "saida", "ajuste"],
       tipo_pessoa: ["fisica", "juridica"],
