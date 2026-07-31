@@ -305,98 +305,6 @@ export type Database = {
         }
         Relationships: []
       }
-      equipamentos: {
-        Row: {
-          acessorios: string | null
-          armazenamento: string | null
-          cliente_id: string | null
-          created_at: string
-          data_entrada: string
-          defeito_informado: string | null
-          deleted_at: string | null
-          diagnostico: string | null
-          estado_fisico: string | null
-          fotos: string[]
-          garantia_ate: string | null
-          id: string
-          marca: string | null
-          memoria_ram: string | null
-          modelo: string | null
-          numero_serie: string | null
-          observacoes: string | null
-          patrimonio: string | null
-          previsao_entrega: string | null
-          processador: string | null
-          senha_informada: string | null
-          sistema_operacional: string | null
-          status: Database["public"]["Enums"]["status_equipamento"]
-          tipo: Database["public"]["Enums"]["tipo_equipamento"]
-          updated_at: string
-        }
-        Insert: {
-          acessorios?: string | null
-          armazenamento?: string | null
-          cliente_id?: string | null
-          created_at?: string
-          data_entrada?: string
-          defeito_informado?: string | null
-          deleted_at?: string | null
-          diagnostico?: string | null
-          estado_fisico?: string | null
-          fotos?: string[]
-          garantia_ate?: string | null
-          id?: string
-          marca?: string | null
-          memoria_ram?: string | null
-          modelo?: string | null
-          numero_serie?: string | null
-          observacoes?: string | null
-          patrimonio?: string | null
-          previsao_entrega?: string | null
-          processador?: string | null
-          senha_informada?: string | null
-          sistema_operacional?: string | null
-          status?: Database["public"]["Enums"]["status_equipamento"]
-          tipo?: Database["public"]["Enums"]["tipo_equipamento"]
-          updated_at?: string
-        }
-        Update: {
-          acessorios?: string | null
-          armazenamento?: string | null
-          cliente_id?: string | null
-          created_at?: string
-          data_entrada?: string
-          defeito_informado?: string | null
-          deleted_at?: string | null
-          diagnostico?: string | null
-          estado_fisico?: string | null
-          fotos?: string[]
-          garantia_ate?: string | null
-          id?: string
-          marca?: string | null
-          memoria_ram?: string | null
-          modelo?: string | null
-          numero_serie?: string | null
-          observacoes?: string | null
-          patrimonio?: string | null
-          previsao_entrega?: string | null
-          processador?: string | null
-          senha_informada?: string | null
-          sistema_operacional?: string | null
-          status?: Database["public"]["Enums"]["status_equipamento"]
-          tipo?: Database["public"]["Enums"]["tipo_equipamento"]
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "equipamentos_cliente_id_fkey"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       equipamento_checklist: {
         Row: {
           created_at: string
@@ -508,6 +416,98 @@ export type Database = {
             columns: ["equipamento_id"]
             isOneToOne: false
             referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamentos: {
+        Row: {
+          acessorios: string | null
+          armazenamento: string | null
+          cliente_id: string | null
+          created_at: string
+          data_entrada: string
+          defeito_informado: string | null
+          deleted_at: string | null
+          diagnostico: string | null
+          estado_fisico: string | null
+          fotos: string[]
+          garantia_ate: string | null
+          id: string
+          marca: string | null
+          memoria_ram: string | null
+          modelo: string | null
+          numero_serie: string | null
+          observacoes: string | null
+          patrimonio: string | null
+          previsao_entrega: string | null
+          processador: string | null
+          senha_informada: string | null
+          sistema_operacional: string | null
+          status: Database["public"]["Enums"]["status_equipamento"]
+          tipo: Database["public"]["Enums"]["tipo_equipamento"]
+          updated_at: string
+        }
+        Insert: {
+          acessorios?: string | null
+          armazenamento?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          data_entrada?: string
+          defeito_informado?: string | null
+          deleted_at?: string | null
+          diagnostico?: string | null
+          estado_fisico?: string | null
+          fotos?: string[]
+          garantia_ate?: string | null
+          id?: string
+          marca?: string | null
+          memoria_ram?: string | null
+          modelo?: string | null
+          numero_serie?: string | null
+          observacoes?: string | null
+          patrimonio?: string | null
+          previsao_entrega?: string | null
+          processador?: string | null
+          senha_informada?: string | null
+          sistema_operacional?: string | null
+          status?: Database["public"]["Enums"]["status_equipamento"]
+          tipo?: Database["public"]["Enums"]["tipo_equipamento"]
+          updated_at?: string
+        }
+        Update: {
+          acessorios?: string | null
+          armazenamento?: string | null
+          cliente_id?: string | null
+          created_at?: string
+          data_entrada?: string
+          defeito_informado?: string | null
+          deleted_at?: string | null
+          diagnostico?: string | null
+          estado_fisico?: string | null
+          fotos?: string[]
+          garantia_ate?: string | null
+          id?: string
+          marca?: string | null
+          memoria_ram?: string | null
+          modelo?: string | null
+          numero_serie?: string | null
+          observacoes?: string | null
+          patrimonio?: string | null
+          previsao_entrega?: string | null
+          processador?: string | null
+          senha_informada?: string | null
+          sistema_operacional?: string | null
+          status?: Database["public"]["Enums"]["status_equipamento"]
+          tipo?: Database["public"]["Enums"]["tipo_equipamento"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamentos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
             referencedColumns: ["id"]
           },
         ]
@@ -776,8 +776,8 @@ export type Database = {
       orcamento_itens: {
         Row: {
           created_at: string
-          descricao: string
           desconto: number
+          descricao: string
           id: string
           orcamento_id: string
           ordem: number
@@ -789,26 +789,26 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          descricao: string
           desconto?: number
+          descricao: string
           id?: string
           orcamento_id: string
           ordem?: number
           quantidade?: number
-          subtotal?: never
+          subtotal?: number | null
           tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
           updated_at?: string
           valor_unitario?: number
         }
         Update: {
           created_at?: string
-          descricao?: string
           desconto?: number
+          descricao?: string
           id?: string
           orcamento_id?: string
           ordem?: number
           quantidade?: number
-          subtotal?: never
+          subtotal?: number | null
           tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
           updated_at?: string
           valor_unitario?: number
@@ -978,7 +978,7 @@ export type Database = {
           garantia_dias?: number
           id?: string
           numero?: number
-          numero_os?: never
+          numero_os?: string | null
           observacoes?: string | null
           previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
@@ -1005,7 +1005,7 @@ export type Database = {
           garantia_dias?: number
           id?: string
           numero?: number
-          numero_os?: never
+          numero_os?: string | null
           observacoes?: string | null
           previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
@@ -1210,19 +1210,14 @@ export type Database = {
         }
         Returns: boolean
       }
-      obter_orcamento_publico: {
-        Args: {
-          p_token: string
-        }
-        Returns: Json
-      }
+      obter_orcamento_publico: { Args: { p_token: string }; Returns: Json }
       registrar_decisao_orcamento: {
         Args: {
           p_acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
-          p_ip: string | null
-          p_mensagem: string | null
+          p_ip: string
+          p_mensagem: string
           p_token: string
-          p_user_agent: string | null
+          p_user_agent: string
         }
         Returns: Json
       }
@@ -1417,7 +1412,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      acao_aprovacao_orcamento: ["aprovado", "recusado", "alteracao_solicitada"],
+      acao_aprovacao_orcamento: [
+        "aprovado",
+        "recusado",
+        "alteracao_solicitada",
+      ],
       app_role: ["admin", "tecnico", "financeiro", "atendente"],
       categoria_foto: ["entrada", "durante_manutencao", "final", "entrega"],
       prioridade: ["baixa", "media", "alta", "urgente"],
