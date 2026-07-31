@@ -91,6 +91,13 @@ function OrcamentoPublicoPage() {
     retry: false,
   });
 
+  const pdfPath = data?.orcamento.pdf_path ?? null;
+  const { data: pdfUrl } = useQuery({
+    queryKey: ["orcamento-publico-pdf", pdfPath],
+    queryFn: () => orcamentosService.pdfUrl(pdfPath!),
+    enabled: Boolean(pdfPath),
+  });
+
   const registrarDecisao = async (acao: AcaoAprovacaoOrcamento, mensagem?: string) => {
     setEnviando(true);
     try {
@@ -144,7 +151,6 @@ function OrcamentoPublicoPage() {
   const { orcamento, os, cliente, equipamento, empresa, itens } = data;
   const decidivel = STATUS_DECIDIVEIS.includes(orcamento.status);
   const equipamentoTexto = equipamento ? equipamentoLabel(equipamento) : "—";
-  const pdfUrl = orcamento.pdf_path ? orcamentosService.pdfUrl(orcamento.pdf_path) : null;
   const validoAte = new Date(
     new Date(orcamento.data_emissao).getTime() + orcamento.validade_dias * 86_400_000,
   ).toISOString();

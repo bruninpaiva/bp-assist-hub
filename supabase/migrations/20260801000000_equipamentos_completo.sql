@@ -89,8 +89,10 @@ GRANT ALL ON public.equipamento_fotos TO service_role;
 ALTER TABLE public.equipamento_fotos ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "equip_fotos_auth_all" ON public.equipamento_fotos FOR ALL TO authenticated USING (true) WITH CHECK (true);
 
+-- Bucket privado: toda leitura acontece via signed URL (createSignedUrl),
+-- nunca por URL publica.
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('equipamento-fotos', 'equipamento-fotos', true)
+VALUES ('equipamento-fotos', 'equipamento-fotos', false)
 ON CONFLICT (id) DO NOTHING;
 
 CREATE POLICY "equip_fotos_storage_select" ON storage.objects FOR SELECT TO authenticated

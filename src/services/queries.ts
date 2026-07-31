@@ -317,7 +317,11 @@ export const equipamentosService = {
   },
 
   fotoUrl: (storagePath: string) =>
-    storageService.getPublicUrl(EQUIPAMENTO_FOTOS_BUCKET, storagePath),
+    storageService.createSignedUrl(EQUIPAMENTO_FOTOS_BUCKET, storagePath),
+
+  /** Assina os caminhos de várias fotos de uma vez — usado pela galeria. */
+  fotoUrls: (storagePaths: string[]) =>
+    storageService.createSignedUrls(EQUIPAMENTO_FOTOS_BUCKET, storagePaths),
 };
 
 export type OrdensOrdenarPor = "data_entrada" | "numero";
@@ -620,10 +624,10 @@ export const orcamentosService = {
       .update({ pdf_path: path, pdf_gerado_em: new Date().toISOString() })
       .eq("id", id);
     if (error) throw new Error(error.message);
-    return storageService.getPublicUrl(ORCAMENTO_PDFS_BUCKET, path);
+    return orcamentosService.pdfUrl(path);
   },
 
-  pdfUrl: (path: string) => storageService.getPublicUrl(ORCAMENTO_PDFS_BUCKET, path),
+  pdfUrl: (path: string) => storageService.createSignedUrl(ORCAMENTO_PDFS_BUCKET, path),
 
   /**
    * Gera (ou renova) o link público de aprovação: cria um token novo, define a

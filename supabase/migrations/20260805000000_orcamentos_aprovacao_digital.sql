@@ -40,12 +40,18 @@ CREATE POLICY "orc_aprovacoes_auth_select" ON public.orcamento_aprovacoes
   FOR SELECT TO authenticated USING (true);
 
 -- ============ STORAGE: PDF do orcamento ============
+-- Bucket privado: toda leitura acontece via signed URL (createSignedUrl),
+-- nunca por URL publica. A pagina publica de aprovacao roda sem sessao
+-- (chave anon), entao o SELECT abaixo tambem libera "anon" — o path do
+-- objeto (id do orcamento, um UUID) so chega ate o visitante atraves da RPC
+-- obter_orcamento_publico, que ja exige o token secreto; nenhuma listagem
+-- de bucket e concedida, so a assinatura de um path ja conhecido.
 
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('orcamento-pdfs', 'orcamento-pdfs', true)
+VALUES ('orcamento-pdfs', 'orcamento-pdfs', false)
 ON CONFLICT (id) DO NOTHING;
 
-CREATE POLICY "orc_pdfs_storage_select" ON storage.objects FOR SELECT TO authenticated
+CREATE POLICY "orc_pdfs_storage_select" ON storage.objects FOR SELECT TO authenticated, anon
   USING (bucket_id = 'orcamento-pdfs');
 CREATE POLICY "orc_pdfs_storage_insert" ON storage.objects FOR INSERT TO authenticated
   WITH CHECK (bucket_id = 'orcamento-pdfs');

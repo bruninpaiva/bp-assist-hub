@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Image as ImageIcon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { EmptyState } from "@/components/common/EmptyState";
 import { LoadingState } from "@/components/common/LoadingState";
+import { Skeleton } from "@/components/ui/skeleton";
 import { equipamentosService } from "@/services/queries";
 import { categoriaFotoLabels } from "@/lib/labels";
 import type { CategoriaFoto, EquipamentoFoto } from "@/types/domain";
@@ -29,6 +31,13 @@ export function FotosGaleria({
   const [categoria, setCategoria] = useState<CategoriaFoto>("entrada");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const storagePaths = fotos.map((f) => f.storage_path);
+  const { data: urls } = useQuery({
+    queryKey: ["equipamento-fotos-signed", equipamentoId, storagePaths],
+    queryFn: () => equipamentosService.fotoUrls(storagePaths),
+    enabled: storagePaths.length > 0,
+  });
 
   const handleUpload = async (file: File) => {
     setUploading(true);
@@ -115,11 +124,15 @@ export function FotosGaleria({
                     key={foto.id}
                     className="group relative aspect-square overflow-hidden rounded-lg border border-border"
                   >
-                    <img
-                      src={equipamentosService.fotoUrl(foto.storage_path)}
-                      alt=""
-                      className="size-full object-cover"
-                    />
+                    {urls?.[foto.storage_path] ? (
+                      <img
+                        src={urls[foto.storage_path]}
+                        alt=""
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      <Skeleton className="size-full rounded-none" />
+                    )}
                     <button
                       type="button"
                       onClick={() => void handleRemove(foto)}
