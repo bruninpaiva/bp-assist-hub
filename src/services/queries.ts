@@ -679,12 +679,14 @@ export const orcamentoPublicoService = {
     ip: string | null;
     userAgent: string | null;
   }) => {
+    // Os parametros TEXT da function aceitam NULL, mas os tipos gerados os
+    // declaram como string — o cast mantem o contrato real do banco.
     const { error } = await supabase.rpc("registrar_decisao_orcamento", {
       p_token: params.token,
       p_acao: params.acao,
-      p_mensagem: params.mensagem,
-      p_ip: params.ip,
-      p_user_agent: params.userAgent,
+      p_mensagem: params.mensagem as string,
+      p_ip: params.ip as string,
+      p_user_agent: params.userAgent as string,
     });
     if (error) throw new Error(error.message);
   },
