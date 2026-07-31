@@ -818,76 +818,85 @@ export type Database = {
       }
       ordens_servico: {
         Row: {
-          cliente_id: string | null
+          ano: number
+          cliente_id: string
           created_at: string
           created_by: string | null
           data_conclusao: string | null
           data_entrada: string
           data_entrega: string | null
-          data_previsao: string | null
           deleted_at: string | null
-          descricao: string | null
+          desconto: number
           diagnostico: string | null
-          equipamento_id: string | null
+          equipamento_id: string
           garantia_dias: number
           id: string
           numero: number
+          numero_os: string | null
+          observacoes: string | null
+          previsao_entrega: string | null
           prioridade: Database["public"]["Enums"]["prioridade"]
+          problema_relatado: string
           solucao: string | null
-          status: Database["public"]["Enums"]["status_os"]
-          tecnico_id: string | null
-          titulo: string
+          status: Database["public"]["Enums"]["status_ordem_servico"]
+          tecnico_responsavel: string | null
           updated_at: string
-          valor_pecas: number
-          valor_servico: number
+          valor_mao_obra: number
+          valor_total: number
         }
         Insert: {
-          cliente_id?: string | null
+          ano?: number
+          cliente_id: string
           created_at?: string
           created_by?: string | null
           data_conclusao?: string | null
           data_entrada?: string
           data_entrega?: string | null
-          data_previsao?: string | null
           deleted_at?: string | null
-          descricao?: string | null
+          desconto?: number
           diagnostico?: string | null
-          equipamento_id?: string | null
+          equipamento_id: string
           garantia_dias?: number
           id?: string
           numero?: number
+          numero_os?: string | null
+          observacoes?: string | null
+          previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
+          problema_relatado: string
           solucao?: string | null
-          status?: Database["public"]["Enums"]["status_os"]
-          tecnico_id?: string | null
-          titulo: string
+          status?: Database["public"]["Enums"]["status_ordem_servico"]
+          tecnico_responsavel?: string | null
           updated_at?: string
-          valor_pecas?: number
-          valor_servico?: number
+          valor_mao_obra?: number
+          valor_total?: number
         }
         Update: {
-          cliente_id?: string | null
+          ano?: number
+          cliente_id?: string
           created_at?: string
           created_by?: string | null
           data_conclusao?: string | null
           data_entrada?: string
           data_entrega?: string | null
-          data_previsao?: string | null
           deleted_at?: string | null
-          descricao?: string | null
+          desconto?: number
           diagnostico?: string | null
-          equipamento_id?: string | null
+          equipamento_id?: string
           garantia_dias?: number
           id?: string
           numero?: number
+          numero_os?: string | null
+          observacoes?: string | null
+          previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
+          problema_relatado?: string
           solucao?: string | null
-          status?: Database["public"]["Enums"]["status_os"]
-          tecnico_id?: string | null
-          titulo?: string
+          status?: Database["public"]["Enums"]["status_ordem_servico"]
+          tecnico_responsavel?: string | null
           updated_at?: string
-          valor_pecas?: number
-          valor_servico?: number
+          valor_mao_obra?: number
+          valor_total?: number
         }
         Relationships: [
           {
@@ -912,7 +921,7 @@ export type Database = {
           descricao: string | null
           id: string
           os_id: string
-          status: Database["public"]["Enums"]["status_os"] | null
+          status: Database["public"]["Enums"]["status_ordem_servico"] | null
           titulo: string
           usuario_id: string | null
         }
@@ -921,7 +930,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           os_id: string
-          status?: Database["public"]["Enums"]["status_os"] | null
+          status?: Database["public"]["Enums"]["status_ordem_servico"] | null
           titulo: string
           usuario_id?: string | null
         }
@@ -930,7 +939,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           os_id?: string
-          status?: Database["public"]["Enums"]["status_os"] | null
+          status?: Database["public"]["Enums"]["status_ordem_servico"] | null
           titulo?: string
           usuario_id?: string | null
         }
@@ -1104,6 +1113,17 @@ export type Database = {
         | "aprovado"
         | "recusado"
         | "expirado"
+      status_ordem_servico:
+        | "recebido"
+        | "em_analise"
+        | "aguardando_orcamento"
+        | "aguardando_aprovacao"
+        | "aguardando_peca"
+        | "em_manutencao"
+        | "teste"
+        | "pronto"
+        | "entregue"
+        | "cancelado"
       status_os:
         | "aberta"
         | "em_analise"
@@ -1280,6 +1300,18 @@ export const Constants = {
         "aprovado",
         "recusado",
         "expirado",
+      ],
+      status_ordem_servico: [
+        "recebido",
+        "em_analise",
+        "aguardando_orcamento",
+        "aguardando_aprovacao",
+        "aguardando_peca",
+        "em_manutencao",
+        "teste",
+        "pronto",
+        "entregue",
+        "cancelado",
       ],
       status_os: [
         "aberta",
