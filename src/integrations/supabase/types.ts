@@ -131,33 +131,6 @@ export type Database = {
         }
         Relationships: []
       }
-      checklist_itens: {
-        Row: {
-          ativo: boolean
-          created_at: string
-          id: string
-          nome: string
-          ordem: number
-          updated_at: string
-        }
-        Insert: {
-          ativo?: boolean
-          created_at?: string
-          id?: string
-          nome: string
-          ordem?: number
-          updated_at?: string
-        }
-        Update: {
-          ativo?: boolean
-          created_at?: string
-          id?: string
-          nome?: string
-          ordem?: number
-          updated_at?: string
-        }
-        Relationships: []
-      }
       clientes: {
         Row: {
           ativo: boolean
@@ -175,7 +148,6 @@ export type Database = {
           id: string
           inscricao_estadual: string | null
           nome: string
-          nome_fantasia: string | null
           numero: string | null
           observacoes: string | null
           razao_social: string | null
@@ -201,7 +173,6 @@ export type Database = {
           id?: string
           inscricao_estadual?: string | null
           nome: string
-          nome_fantasia?: string | null
           numero?: string | null
           observacoes?: string | null
           razao_social?: string | null
@@ -227,7 +198,6 @@ export type Database = {
           id?: string
           inscricao_estadual?: string | null
           nome?: string
-          nome_fantasia?: string | null
           numero?: string | null
           observacoes?: string | null
           razao_social?: string | null
@@ -308,82 +278,52 @@ export type Database = {
       equipamentos: {
         Row: {
           acessorios: string | null
-          armazenamento: string | null
           cliente_id: string | null
           created_at: string
-          data_entrada: string
           defeito_informado: string | null
           deleted_at: string | null
-          diagnostico: string | null
           estado_fisico: string | null
           fotos: string[]
-          garantia_ate: string | null
           id: string
           marca: string | null
-          memoria_ram: string | null
           modelo: string | null
           numero_serie: string | null
           observacoes: string | null
           patrimonio: string | null
-          previsao_entrega: string | null
-          processador: string | null
-          senha_informada: string | null
-          sistema_operacional: string | null
-          status: Database["public"]["Enums"]["status_equipamento"]
           tipo: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at: string
         }
         Insert: {
           acessorios?: string | null
-          armazenamento?: string | null
           cliente_id?: string | null
           created_at?: string
-          data_entrada?: string
           defeito_informado?: string | null
           deleted_at?: string | null
-          diagnostico?: string | null
           estado_fisico?: string | null
           fotos?: string[]
-          garantia_ate?: string | null
           id?: string
           marca?: string | null
-          memoria_ram?: string | null
           modelo?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
-          previsao_entrega?: string | null
-          processador?: string | null
-          senha_informada?: string | null
-          sistema_operacional?: string | null
-          status?: Database["public"]["Enums"]["status_equipamento"]
           tipo?: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at?: string
         }
         Update: {
           acessorios?: string | null
-          armazenamento?: string | null
           cliente_id?: string | null
           created_at?: string
-          data_entrada?: string
           defeito_informado?: string | null
           deleted_at?: string | null
-          diagnostico?: string | null
           estado_fisico?: string | null
           fotos?: string[]
-          garantia_ate?: string | null
           id?: string
           marca?: string | null
-          memoria_ram?: string | null
           modelo?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
-          previsao_entrega?: string | null
-          processador?: string | null
-          senha_informada?: string | null
-          sistema_operacional?: string | null
-          status?: Database["public"]["Enums"]["status_equipamento"]
           tipo?: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at?: string
         }
@@ -393,121 +333,6 @@ export type Database = {
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      equipamento_checklist: {
-        Row: {
-          created_at: string
-          equipamento_id: string
-          id: string
-          item_id: string | null
-          observacao: string | null
-          presente: boolean
-        }
-        Insert: {
-          created_at?: string
-          equipamento_id: string
-          id?: string
-          item_id?: string | null
-          observacao?: string | null
-          presente?: boolean
-        }
-        Update: {
-          created_at?: string
-          equipamento_id?: string
-          id?: string
-          item_id?: string | null
-          observacao?: string | null
-          presente?: boolean
-        }
-        Relationships: [
-          {
-            foreignKeyName: "equipamento_checklist_equipamento_id_fkey"
-            columns: ["equipamento_id"]
-            isOneToOne: false
-            referencedRelation: "equipamentos"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "equipamento_checklist_item_id_fkey"
-            columns: ["item_id"]
-            isOneToOne: false
-            referencedRelation: "checklist_itens"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      equipamento_eventos: {
-        Row: {
-          created_at: string
-          descricao: string | null
-          equipamento_id: string
-          id: string
-          status: Database["public"]["Enums"]["status_equipamento"] | null
-          titulo: string
-          usuario_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          descricao?: string | null
-          equipamento_id: string
-          id?: string
-          status?: Database["public"]["Enums"]["status_equipamento"] | null
-          titulo: string
-          usuario_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          descricao?: string | null
-          equipamento_id?: string
-          id?: string
-          status?: Database["public"]["Enums"]["status_equipamento"] | null
-          titulo?: string
-          usuario_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "equipamento_eventos_equipamento_id_fkey"
-            columns: ["equipamento_id"]
-            isOneToOne: false
-            referencedRelation: "equipamentos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      equipamento_fotos: {
-        Row: {
-          categoria: Database["public"]["Enums"]["categoria_foto"]
-          created_at: string
-          created_by: string | null
-          equipamento_id: string
-          id: string
-          storage_path: string
-        }
-        Insert: {
-          categoria?: Database["public"]["Enums"]["categoria_foto"]
-          created_at?: string
-          created_by?: string | null
-          equipamento_id: string
-          id?: string
-          storage_path: string
-        }
-        Update: {
-          categoria?: Database["public"]["Enums"]["categoria_foto"]
-          created_at?: string
-          created_by?: string | null
-          equipamento_id?: string
-          id?: string
-          storage_path?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "equipamento_fotos_equipamento_id_fkey"
-            columns: ["equipamento_id"]
-            isOneToOne: false
-            referencedRelation: "equipamentos"
             referencedColumns: ["id"]
           },
         ]
@@ -694,124 +519,36 @@ export type Database = {
           },
         ]
       }
-      orcamento_aprovacoes: {
-        Row: {
-          acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
-          created_at: string
-          id: string
-          ip: string | null
-          mensagem: string | null
-          orcamento_id: string
-          token_utilizado: string
-          user_agent: string | null
-        }
-        Insert: {
-          acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
-          created_at?: string
-          id?: string
-          ip?: string | null
-          mensagem?: string | null
-          orcamento_id: string
-          token_utilizado: string
-          user_agent?: string | null
-        }
-        Update: {
-          acao?: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
-          created_at?: string
-          id?: string
-          ip?: string | null
-          mensagem?: string | null
-          orcamento_id?: string
-          token_utilizado?: string
-          user_agent?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "orcamento_aprovacoes_orcamento_id_fkey"
-            columns: ["orcamento_id"]
-            isOneToOne: false
-            referencedRelation: "orcamentos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      orcamento_eventos: {
-        Row: {
-          created_at: string
-          descricao: string | null
-          id: string
-          orcamento_id: string
-          status: Database["public"]["Enums"]["status_orcamento"] | null
-          titulo: string
-          usuario_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          orcamento_id: string
-          status?: Database["public"]["Enums"]["status_orcamento"] | null
-          titulo: string
-          usuario_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          descricao?: string | null
-          id?: string
-          orcamento_id?: string
-          status?: Database["public"]["Enums"]["status_orcamento"] | null
-          titulo?: string
-          usuario_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "orcamento_eventos_orcamento_id_fkey"
-            columns: ["orcamento_id"]
-            isOneToOne: false
-            referencedRelation: "orcamentos"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       orcamento_itens: {
         Row: {
           created_at: string
           descricao: string
-          desconto: number
           id: string
+          item: string | null
           orcamento_id: string
           ordem: number
+          preco_unitario: number
           quantidade: number
-          subtotal: number | null
-          tipo: Database["public"]["Enums"]["tipo_item_orcamento"]
-          updated_at: string
-          valor_unitario: number
         }
         Insert: {
           created_at?: string
           descricao: string
-          desconto?: number
           id?: string
+          item?: string | null
           orcamento_id: string
           ordem?: number
+          preco_unitario?: number
           quantidade?: number
-          subtotal?: never
-          tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
-          updated_at?: string
-          valor_unitario?: number
         }
         Update: {
           created_at?: string
           descricao?: string
-          desconto?: number
           id?: string
+          item?: string | null
           orcamento_id?: string
           ordem?: number
+          preco_unitario?: number
           quantidade?: number
-          subtotal?: never
-          tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
-          updated_at?: string
-          valor_unitario?: number
         }
         Relationships: [
           {
@@ -834,21 +571,13 @@ export type Database = {
           data_emissao: string
           deleted_at: string | null
           desconto: number
-          equipamento_id: string | null
           id: string
           numero: number
           observacoes: string | null
-          os_id: string
-          pdf_gerado_em: string | null
-          pdf_path: string | null
+          os_id: string | null
           prazo_entrega: string | null
           status: Database["public"]["Enums"]["status_orcamento"]
-          subtotal: number
           titulo: string | null
-          token_criado_em: string | null
-          token_expira_em: string | null
-          token_publico: string | null
-          token_revogado_em: string | null
           total: number
           updated_at: string
           validade_dias: number
@@ -863,21 +592,13 @@ export type Database = {
           data_emissao?: string
           deleted_at?: string | null
           desconto?: number
-          equipamento_id?: string | null
           id?: string
           numero?: number
           observacoes?: string | null
-          os_id: string
-          pdf_gerado_em?: string | null
-          pdf_path?: string | null
+          os_id?: string | null
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
-          subtotal?: number
           titulo?: string | null
-          token_criado_em?: string | null
-          token_expira_em?: string | null
-          token_publico?: string | null
-          token_revogado_em?: string | null
           total?: number
           updated_at?: string
           validade_dias?: number
@@ -892,21 +613,13 @@ export type Database = {
           data_emissao?: string
           deleted_at?: string | null
           desconto?: number
-          equipamento_id?: string | null
           id?: string
           numero?: number
           observacoes?: string | null
-          os_id?: string
-          pdf_gerado_em?: string | null
-          pdf_path?: string | null
+          os_id?: string | null
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
-          subtotal?: number
           titulo?: string | null
-          token_criado_em?: string | null
-          token_expira_em?: string | null
-          token_publico?: string | null
-          token_revogado_em?: string | null
           total?: number
           updated_at?: string
           validade_dias?: number
@@ -920,13 +633,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "orcamentos_equipamento_id_fkey"
-            columns: ["equipamento_id"]
-            isOneToOne: false
-            referencedRelation: "equipamentos"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "orcamentos_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
@@ -937,85 +643,76 @@ export type Database = {
       }
       ordens_servico: {
         Row: {
-          ano: number
-          cliente_id: string
+          cliente_id: string | null
           created_at: string
           created_by: string | null
           data_conclusao: string | null
           data_entrada: string
           data_entrega: string | null
+          data_previsao: string | null
           deleted_at: string | null
-          desconto: number
+          descricao: string | null
           diagnostico: string | null
-          equipamento_id: string
+          equipamento_id: string | null
           garantia_dias: number
           id: string
           numero: number
-          numero_os: string | null
-          observacoes: string | null
-          previsao_entrega: string | null
           prioridade: Database["public"]["Enums"]["prioridade"]
-          problema_relatado: string
           solucao: string | null
-          status: Database["public"]["Enums"]["status_ordem_servico"]
-          tecnico_responsavel: string | null
+          status: Database["public"]["Enums"]["status_os"]
+          tecnico_id: string | null
+          titulo: string
           updated_at: string
-          valor_mao_obra: number
-          valor_total: number
+          valor_pecas: number
+          valor_servico: number
         }
         Insert: {
-          ano?: number
-          cliente_id: string
+          cliente_id?: string | null
           created_at?: string
           created_by?: string | null
           data_conclusao?: string | null
           data_entrada?: string
           data_entrega?: string | null
+          data_previsao?: string | null
           deleted_at?: string | null
-          desconto?: number
+          descricao?: string | null
           diagnostico?: string | null
-          equipamento_id: string
+          equipamento_id?: string | null
           garantia_dias?: number
           id?: string
           numero?: number
-          numero_os?: never
-          observacoes?: string | null
-          previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
-          problema_relatado: string
           solucao?: string | null
-          status?: Database["public"]["Enums"]["status_ordem_servico"]
-          tecnico_responsavel?: string | null
+          status?: Database["public"]["Enums"]["status_os"]
+          tecnico_id?: string | null
+          titulo: string
           updated_at?: string
-          valor_mao_obra?: number
-          valor_total?: number
+          valor_pecas?: number
+          valor_servico?: number
         }
         Update: {
-          ano?: number
-          cliente_id?: string
+          cliente_id?: string | null
           created_at?: string
           created_by?: string | null
           data_conclusao?: string | null
           data_entrada?: string
           data_entrega?: string | null
+          data_previsao?: string | null
           deleted_at?: string | null
-          desconto?: number
+          descricao?: string | null
           diagnostico?: string | null
-          equipamento_id?: string
+          equipamento_id?: string | null
           garantia_dias?: number
           id?: string
           numero?: number
-          numero_os?: never
-          observacoes?: string | null
-          previsao_entrega?: string | null
           prioridade?: Database["public"]["Enums"]["prioridade"]
-          problema_relatado?: string
           solucao?: string | null
-          status?: Database["public"]["Enums"]["status_ordem_servico"]
-          tecnico_responsavel?: string | null
+          status?: Database["public"]["Enums"]["status_os"]
+          tecnico_id?: string | null
+          titulo?: string
           updated_at?: string
-          valor_mao_obra?: number
-          valor_total?: number
+          valor_pecas?: number
+          valor_servico?: number
         }
         Relationships: [
           {
@@ -1040,7 +737,7 @@ export type Database = {
           descricao: string | null
           id: string
           os_id: string
-          status: Database["public"]["Enums"]["status_ordem_servico"] | null
+          status: Database["public"]["Enums"]["status_os"] | null
           titulo: string
           usuario_id: string | null
         }
@@ -1049,7 +746,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           os_id: string
-          status?: Database["public"]["Enums"]["status_ordem_servico"] | null
+          status?: Database["public"]["Enums"]["status_os"] | null
           titulo: string
           usuario_id?: string | null
         }
@@ -1058,7 +755,7 @@ export type Database = {
           descricao?: string | null
           id?: string
           os_id?: string
-          status?: Database["public"]["Enums"]["status_ordem_servico"] | null
+          status?: Database["public"]["Enums"]["status_os"] | null
           titulo?: string
           usuario_id?: string | null
         }
@@ -1210,38 +907,10 @@ export type Database = {
         }
         Returns: boolean
       }
-      obter_orcamento_publico: {
-        Args: {
-          p_token: string
-        }
-        Returns: Json
-      }
-      registrar_decisao_orcamento: {
-        Args: {
-          p_acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
-          p_ip: string | null
-          p_mensagem: string | null
-          p_token: string
-          p_user_agent: string | null
-        }
-        Returns: Json
-      }
     }
     Enums: {
-      acao_aprovacao_orcamento: "aprovado" | "recusado" | "alteracao_solicitada"
       app_role: "admin" | "tecnico" | "financeiro" | "atendente"
-      categoria_foto: "entrada" | "durante_manutencao" | "final" | "entrega"
       prioridade: "baixa" | "media" | "alta" | "urgente"
-      status_equipamento:
-        | "recebido"
-        | "em_analise"
-        | "aguardando_orcamento"
-        | "aguardando_aprovacao"
-        | "aguardando_peca"
-        | "em_manutencao"
-        | "pronto"
-        | "entregue"
-        | "cancelado"
       status_lancamento: "pendente" | "pago" | "atrasado" | "cancelado"
       status_orcamento:
         | "rascunho"
@@ -1249,18 +918,6 @@ export type Database = {
         | "aprovado"
         | "recusado"
         | "expirado"
-        | "cancelado"
-      status_ordem_servico:
-        | "recebido"
-        | "em_analise"
-        | "aguardando_orcamento"
-        | "aguardando_aprovacao"
-        | "aguardando_peca"
-        | "em_manutencao"
-        | "teste"
-        | "pronto"
-        | "entregue"
-        | "cancelado"
       status_os:
         | "aberta"
         | "em_analise"
@@ -1286,7 +943,6 @@ export type Database = {
         | "roteador"
         | "nobreak"
         | "outros"
-      tipo_item_orcamento: "produto" | "servico"
       tipo_lancamento: "entrada" | "saida"
       tipo_movimentacao: "entrada" | "saida" | "ajuste"
       tipo_pessoa: "fisica" | "juridica"
@@ -1417,21 +1073,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      acao_aprovacao_orcamento: ["aprovado", "recusado", "alteracao_solicitada"],
       app_role: ["admin", "tecnico", "financeiro", "atendente"],
-      categoria_foto: ["entrada", "durante_manutencao", "final", "entrega"],
       prioridade: ["baixa", "media", "alta", "urgente"],
-      status_equipamento: [
-        "recebido",
-        "em_analise",
-        "aguardando_orcamento",
-        "aguardando_aprovacao",
-        "aguardando_peca",
-        "em_manutencao",
-        "pronto",
-        "entregue",
-        "cancelado",
-      ],
       status_lancamento: ["pendente", "pago", "atrasado", "cancelado"],
       status_orcamento: [
         "rascunho",
@@ -1439,19 +1082,6 @@ export const Constants = {
         "aprovado",
         "recusado",
         "expirado",
-        "cancelado",
-      ],
-      status_ordem_servico: [
-        "recebido",
-        "em_analise",
-        "aguardando_orcamento",
-        "aguardando_aprovacao",
-        "aguardando_peca",
-        "em_manutencao",
-        "teste",
-        "pronto",
-        "entregue",
-        "cancelado",
       ],
       status_os: [
         "aberta",
@@ -1481,7 +1111,6 @@ export const Constants = {
         "nobreak",
         "outros",
       ],
-      tipo_item_orcamento: ["produto", "servico"],
       tipo_lancamento: ["entrada", "saida"],
       tipo_movimentacao: ["entrada", "saida", "ajuste"],
       tipo_pessoa: ["fisica", "juridica"],
