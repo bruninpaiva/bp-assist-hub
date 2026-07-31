@@ -694,6 +694,47 @@ export type Database = {
           },
         ]
       }
+      orcamento_aprovacoes: {
+        Row: {
+          acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
+          created_at: string
+          id: string
+          ip: string | null
+          mensagem: string | null
+          orcamento_id: string
+          token_utilizado: string
+          user_agent: string | null
+        }
+        Insert: {
+          acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
+          created_at?: string
+          id?: string
+          ip?: string | null
+          mensagem?: string | null
+          orcamento_id: string
+          token_utilizado: string
+          user_agent?: string | null
+        }
+        Update: {
+          acao?: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
+          created_at?: string
+          id?: string
+          ip?: string | null
+          mensagem?: string | null
+          orcamento_id?: string
+          token_utilizado?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamento_aprovacoes_orcamento_id_fkey"
+            columns: ["orcamento_id"]
+            isOneToOne: false
+            referencedRelation: "orcamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       orcamento_eventos: {
         Row: {
           created_at: string
@@ -798,10 +839,16 @@ export type Database = {
           numero: number
           observacoes: string | null
           os_id: string
+          pdf_gerado_em: string | null
+          pdf_path: string | null
           prazo_entrega: string | null
           status: Database["public"]["Enums"]["status_orcamento"]
           subtotal: number
           titulo: string | null
+          token_criado_em: string | null
+          token_expira_em: string | null
+          token_publico: string | null
+          token_revogado_em: string | null
           total: number
           updated_at: string
           validade_dias: number
@@ -821,10 +868,16 @@ export type Database = {
           numero?: number
           observacoes?: string | null
           os_id: string
+          pdf_gerado_em?: string | null
+          pdf_path?: string | null
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
           subtotal?: number
           titulo?: string | null
+          token_criado_em?: string | null
+          token_expira_em?: string | null
+          token_publico?: string | null
+          token_revogado_em?: string | null
           total?: number
           updated_at?: string
           validade_dias?: number
@@ -844,10 +897,16 @@ export type Database = {
           numero?: number
           observacoes?: string | null
           os_id?: string
+          pdf_gerado_em?: string | null
+          pdf_path?: string | null
           prazo_entrega?: string | null
           status?: Database["public"]["Enums"]["status_orcamento"]
           subtotal?: number
           titulo?: string | null
+          token_criado_em?: string | null
+          token_expira_em?: string | null
+          token_publico?: string | null
+          token_revogado_em?: string | null
           total?: number
           updated_at?: string
           validade_dias?: number
@@ -1151,8 +1210,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      obter_orcamento_publico: { Args: { p_token: string }; Returns: Json }
+      registrar_decisao_orcamento: {
+        Args: {
+          p_acao: Database["public"]["Enums"]["acao_aprovacao_orcamento"]
+          p_ip: string
+          p_mensagem: string
+          p_token: string
+          p_user_agent: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
+      acao_aprovacao_orcamento: "aprovado" | "recusado" | "alteracao_solicitada"
       app_role: "admin" | "tecnico" | "financeiro" | "atendente"
       categoria_foto: "entrada" | "durante_manutencao" | "final" | "entrega"
       prioridade: "baixa" | "media" | "alta" | "urgente"
@@ -1341,6 +1412,11 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      acao_aprovacao_orcamento: [
+        "aprovado",
+        "recusado",
+        "alteracao_solicitada",
+      ],
       app_role: ["admin", "tecnico", "financeiro", "atendente"],
       categoria_foto: ["entrada", "durante_manutencao", "final", "entrega"],
       prioridade: ["baixa", "media", "alta", "urgente"],
