@@ -131,6 +131,33 @@ export type Database = {
         }
         Relationships: []
       }
+      checklist_itens: {
+        Row: {
+          ativo: boolean
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          updated_at: string
+        }
+        Insert: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          updated_at?: string
+        }
+        Update: {
+          ativo?: boolean
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clientes: {
         Row: {
           ativo: boolean
@@ -278,55 +305,200 @@ export type Database = {
         }
         Relationships: []
       }
+      equipamento_checklist: {
+        Row: {
+          created_at: string
+          equipamento_id: string
+          id: string
+          item_id: string | null
+          observacao: string | null
+          presente: boolean
+        }
+        Insert: {
+          created_at?: string
+          equipamento_id: string
+          id?: string
+          item_id?: string | null
+          observacao?: string | null
+          presente?: boolean
+        }
+        Update: {
+          created_at?: string
+          equipamento_id?: string
+          id?: string
+          item_id?: string | null
+          observacao?: string | null
+          presente?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_checklist_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "equipamento_checklist_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "checklist_itens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamento_eventos: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          equipamento_id: string
+          id: string
+          status: Database["public"]["Enums"]["status_equipamento"] | null
+          titulo: string
+          usuario_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          equipamento_id: string
+          id?: string
+          status?: Database["public"]["Enums"]["status_equipamento"] | null
+          titulo: string
+          usuario_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          equipamento_id?: string
+          id?: string
+          status?: Database["public"]["Enums"]["status_equipamento"] | null
+          titulo?: string
+          usuario_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_eventos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      equipamento_fotos: {
+        Row: {
+          categoria: Database["public"]["Enums"]["categoria_foto"]
+          created_at: string
+          created_by: string | null
+          equipamento_id: string
+          id: string
+          storage_path: string
+        }
+        Insert: {
+          categoria?: Database["public"]["Enums"]["categoria_foto"]
+          created_at?: string
+          created_by?: string | null
+          equipamento_id: string
+          id?: string
+          storage_path: string
+        }
+        Update: {
+          categoria?: Database["public"]["Enums"]["categoria_foto"]
+          created_at?: string
+          created_by?: string | null
+          equipamento_id?: string
+          id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "equipamento_fotos_equipamento_id_fkey"
+            columns: ["equipamento_id"]
+            isOneToOne: false
+            referencedRelation: "equipamentos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       equipamentos: {
         Row: {
           acessorios: string | null
+          armazenamento: string | null
           cliente_id: string | null
           created_at: string
+          data_entrada: string
           defeito_informado: string | null
           deleted_at: string | null
+          diagnostico: string | null
           estado_fisico: string | null
           fotos: string[]
+          garantia_ate: string | null
           id: string
           marca: string | null
+          memoria_ram: string | null
           modelo: string | null
           numero_serie: string | null
           observacoes: string | null
           patrimonio: string | null
+          previsao_entrega: string | null
+          processador: string | null
+          senha_informada: string | null
+          sistema_operacional: string | null
+          status: Database["public"]["Enums"]["status_equipamento"]
           tipo: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at: string
         }
         Insert: {
           acessorios?: string | null
+          armazenamento?: string | null
           cliente_id?: string | null
           created_at?: string
+          data_entrada?: string
           defeito_informado?: string | null
           deleted_at?: string | null
+          diagnostico?: string | null
           estado_fisico?: string | null
           fotos?: string[]
+          garantia_ate?: string | null
           id?: string
           marca?: string | null
+          memoria_ram?: string | null
           modelo?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
+          previsao_entrega?: string | null
+          processador?: string | null
+          senha_informada?: string | null
+          sistema_operacional?: string | null
+          status?: Database["public"]["Enums"]["status_equipamento"]
           tipo?: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at?: string
         }
         Update: {
           acessorios?: string | null
+          armazenamento?: string | null
           cliente_id?: string | null
           created_at?: string
+          data_entrada?: string
           defeito_informado?: string | null
           deleted_at?: string | null
+          diagnostico?: string | null
           estado_fisico?: string | null
           fotos?: string[]
+          garantia_ate?: string | null
           id?: string
           marca?: string | null
+          memoria_ram?: string | null
           modelo?: string | null
           numero_serie?: string | null
           observacoes?: string | null
           patrimonio?: string | null
+          previsao_entrega?: string | null
+          processador?: string | null
+          senha_informada?: string | null
+          sistema_operacional?: string | null
+          status?: Database["public"]["Enums"]["status_equipamento"]
           tipo?: Database["public"]["Enums"]["tipo_equipamento"]
           updated_at?: string
         }
@@ -913,7 +1085,18 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "tecnico" | "financeiro" | "atendente"
+      categoria_foto: "entrada" | "durante_manutencao" | "final" | "entrega"
       prioridade: "baixa" | "media" | "alta" | "urgente"
+      status_equipamento:
+        | "recebido"
+        | "em_analise"
+        | "aguardando_orcamento"
+        | "aguardando_aprovacao"
+        | "aguardando_peca"
+        | "em_manutencao"
+        | "pronto"
+        | "entregue"
+        | "cancelado"
       status_lancamento: "pendente" | "pago" | "atrasado" | "cancelado"
       status_orcamento:
         | "rascunho"
@@ -1077,7 +1260,19 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "tecnico", "financeiro", "atendente"],
+      categoria_foto: ["entrada", "durante_manutencao", "final", "entrega"],
       prioridade: ["baixa", "media", "alta", "urgente"],
+      status_equipamento: [
+        "recebido",
+        "em_analise",
+        "aguardando_orcamento",
+        "aguardando_aprovacao",
+        "aguardando_peca",
+        "em_manutencao",
+        "pronto",
+        "entregue",
+        "cancelado",
+      ],
       status_lancamento: ["pendente", "pago", "atrasado", "cancelado"],
       status_orcamento: [
         "rascunho",
