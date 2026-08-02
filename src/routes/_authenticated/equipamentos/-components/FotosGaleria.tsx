@@ -37,6 +37,9 @@ export function FotosGaleria({
     queryKey: ["equipamento-fotos-signed", equipamentoId, storagePaths],
     queryFn: () => equipamentosService.fotoUrls(storagePaths),
     enabled: storagePaths.length > 0,
+    // Renova as signed URLs antes do TTL expirar.
+    staleTime: SIGNED_URL_REFRESH_MS,
+    refetchInterval: SIGNED_URL_REFRESH_MS,
   });
 
   const handleUpload = async (file: File) => {
