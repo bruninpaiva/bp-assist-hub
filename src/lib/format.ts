@@ -2,9 +2,7 @@ import { format, formatDistanceToNow, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 export const brl = (value: number | string | null | undefined) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
-    Number(value ?? 0),
-  );
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value ?? 0));
 
 export const numero = (value: number | string | null | undefined, digits = 0) =>
   new Intl.NumberFormat("pt-BR", {
