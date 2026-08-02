@@ -4,6 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 const SIGNED_URL_EXPIRES_IN_SECONDS = 60 * 60;
 
 /**
+ * Intervalo de renovação das signed URLs em cache: 45 min, folga de 15 min
+ * antes do TTL de 1 h, para que nenhum link exibido na tela expire em uso.
+ */
+export const SIGNED_URL_REFRESH_MS = 45 * 60 * 1000;
+
+/**
  * Camada fina sobre o Supabase Storage — genérica para qualquer bucket/módulo.
  * Todos os buckets são privados: não existe URL pública, toda leitura passa
  * por uma signed URL de curta duração gerada sob demanda.

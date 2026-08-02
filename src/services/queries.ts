@@ -666,12 +666,6 @@ export const orcamentosService = {
 
 /** Acesso público (sem login) usado pela página de aprovação — token é a única credencial. */
 export const orcamentoPublicoService = {
-  obter: async (token: string) => {
-    const { data, error } = await supabase.rpc("obter_orcamento_publico", { p_token: token });
-    if (error) throw new Error(error.message);
-    return data as unknown as OrcamentoPublico;
-  },
-
   registrarDecisao: async (params: {
     token: string;
     acao: AcaoAprovacaoOrcamento;

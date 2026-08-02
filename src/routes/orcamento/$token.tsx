@@ -30,12 +30,12 @@ import { LoadingState } from "@/components/common/LoadingState";
 import { EmptyState } from "@/components/common/EmptyState";
 import { ConfirmDialog } from "@/components/common/ConfirmDialog";
 import { DataTable, type DataTableColumn } from "@/components/tables/DataTable";
-import { orcamentoPublicoService, orcamentosService } from "@/services/queries";
+import { SIGNED_URL_REFRESH_MS } from "@/services/storage";
 import { statusOrcamentoLabels, tipoItemOrcamentoLabels } from "@/lib/labels";
 import { maskCNPJ, maskTelefone } from "@/lib/masks";
 import { dataCurta } from "@/lib/format";
 import { equipamentoLabel } from "@/routes/_authenticated/orcamentos/-lib/schema";
-import { registrarDecisaoOrcamentoFn } from "./-lib/serverFn";
+import { obterOrcamentoPublicoFn, registrarDecisaoOrcamentoFn } from "./-lib/serverFn";
 import type { OrcamentoPublico } from "@/services/queries";
 import type { AcaoAprovacaoOrcamento } from "@/types/domain";
 
@@ -87,16 +87,13 @@ function OrcamentoPublicoPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey,
-    queryFn: () => orcamentoPublicoService.obter(token),
+    queryFn: () => obterOrcamentoPublicoFn({ data: { token } }),
     retry: false,
+    // A signed URL do PDF vem junto: renova antes de expirar.
+    refetchInterval: SIGNED_URL_REFRESH_MS,
   });
 
-  const pdfPath = data?.orcamento.pdf_path ?? null;
-  const { data: pdfUrl } = useQuery({
-    queryKey: ["orcamento-publico-pdf", pdfPath],
-    queryFn: () => orcamentosService.pdfUrl(pdfPath!),
-    enabled: Boolean(pdfPath),
-  });
+  const pdfUrl = data?.pdf_url ?? null;
 
   const registrarDecisao = async (acao: AcaoAprovacaoOrcamento, mensagem?: string) => {
     setEnviando(true);

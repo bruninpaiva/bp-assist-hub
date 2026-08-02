@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { SIGNED_URL_REFRESH_MS } from "@/services/storage";
 import { toast } from "sonner";
 import { Image as ImageIcon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -37,6 +38,9 @@ export function FotosGaleria({
     queryKey: ["equipamento-fotos-signed", equipamentoId, storagePaths],
     queryFn: () => equipamentosService.fotoUrls(storagePaths),
     enabled: storagePaths.length > 0,
+    // Renova as signed URLs antes do TTL expirar.
+    staleTime: SIGNED_URL_REFRESH_MS,
+    refetchInterval: SIGNED_URL_REFRESH_MS,
   });
 
   const handleUpload = async (file: File) => {
