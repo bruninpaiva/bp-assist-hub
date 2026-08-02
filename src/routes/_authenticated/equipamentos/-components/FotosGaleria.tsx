@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { SIGNED_URL_REFRESH_MS } from "@/services/storage";
 import { toast } from "sonner";
 import { Image as ImageIcon, Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
