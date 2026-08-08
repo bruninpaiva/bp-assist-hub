@@ -646,43 +646,84 @@ export type Database = {
       movimentacoes_estoque: {
         Row: {
           created_at: string
+          custo_medio_anterior: number | null
+          custo_medio_novo: number | null
           custo_unitario: number | null
+          data_compra: string | null
+          documento: string | null
+          estoque_anterior: number | null
+          estoque_novo: number | null
+          fornecedor_id: string | null
           id: string
+          motivo: string | null
           observacoes: string | null
           os_id: string | null
+          os_peca_id: string | null
           produto_id: string
           quantidade: number
-          tipo: Database["public"]["Enums"]["tipo_movimentacao"]
+          tipo: Database["public"]["Enums"]["tipo_movimentacao_estoque"]
           usuario_id: string | null
         }
         Insert: {
           created_at?: string
+          custo_medio_anterior?: number | null
+          custo_medio_novo?: number | null
           custo_unitario?: number | null
+          data_compra?: string | null
+          documento?: string | null
+          estoque_anterior?: number | null
+          estoque_novo?: number | null
+          fornecedor_id?: string | null
           id?: string
+          motivo?: string | null
           observacoes?: string | null
           os_id?: string | null
+          os_peca_id?: string | null
           produto_id: string
           quantidade: number
-          tipo: Database["public"]["Enums"]["tipo_movimentacao"]
+          tipo: Database["public"]["Enums"]["tipo_movimentacao_estoque"]
           usuario_id?: string | null
         }
         Update: {
           created_at?: string
+          custo_medio_anterior?: number | null
+          custo_medio_novo?: number | null
           custo_unitario?: number | null
+          data_compra?: string | null
+          documento?: string | null
+          estoque_anterior?: number | null
+          estoque_novo?: number | null
+          fornecedor_id?: string | null
           id?: string
+          motivo?: string | null
           observacoes?: string | null
           os_id?: string | null
+          os_peca_id?: string | null
           produto_id?: string
           quantidade?: number
-          tipo?: Database["public"]["Enums"]["tipo_movimentacao"]
+          tipo?: Database["public"]["Enums"]["tipo_movimentacao_estoque"]
           usuario_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "movimentacoes_estoque_fornecedor_id_fkey"
+            columns: ["fornecedor_id"]
+            isOneToOne: false
+            referencedRelation: "fornecedores"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "movimentacoes_estoque_os_id_fkey"
             columns: ["os_id"]
             isOneToOne: false
             referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "movimentacoes_estoque_os_peca_id_fkey"
+            columns: ["os_peca_id"]
+            isOneToOne: false
+            referencedRelation: "os_pecas"
             referencedColumns: ["id"]
           },
           {
@@ -781,6 +822,7 @@ export type Database = {
           id: string
           orcamento_id: string
           ordem: number
+          produto_id: string | null
           quantidade: number
           subtotal: number | null
           tipo: Database["public"]["Enums"]["tipo_item_orcamento"]
@@ -794,6 +836,7 @@ export type Database = {
           id?: string
           orcamento_id: string
           ordem?: number
+          produto_id?: string | null
           quantidade?: number
           subtotal?: number | null
           tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
@@ -807,6 +850,7 @@ export type Database = {
           id?: string
           orcamento_id?: string
           ordem?: number
+          produto_id?: string | null
           quantidade?: number
           subtotal?: number | null
           tipo?: Database["public"]["Enums"]["tipo_item_orcamento"]
@@ -819,6 +863,13 @@ export type Database = {
             columns: ["orcamento_id"]
             isOneToOne: false
             referencedRelation: "orcamentos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orcamento_itens_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
             referencedColumns: ["id"]
           },
         ]
@@ -1072,55 +1123,145 @@ export type Database = {
           },
         ]
       }
+      os_pecas: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          custo_unitario: number
+          devolvida_em: string | null
+          id: string
+          motivo_devolucao: string | null
+          observacao: string | null
+          os_id: string
+          preco_unitario: number
+          produto_id: string
+          quantidade: number
+          situacao: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at: string
+          utilizada_em: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          custo_unitario?: number
+          devolvida_em?: string | null
+          id?: string
+          motivo_devolucao?: string | null
+          observacao?: string | null
+          os_id: string
+          preco_unitario?: number
+          produto_id: string
+          quantidade: number
+          situacao?: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at?: string
+          utilizada_em?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          custo_unitario?: number
+          devolvida_em?: string | null
+          id?: string
+          motivo_devolucao?: string | null
+          observacao?: string | null
+          os_id?: string
+          preco_unitario?: number
+          produto_id?: string
+          quantidade?: number
+          situacao?: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at?: string
+          utilizada_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "os_pecas_os_id_fkey"
+            columns: ["os_id"]
+            isOneToOne: false
+            referencedRelation: "ordens_servico"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "os_pecas_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       produtos: {
         Row: {
           ativo: boolean
           categoria_id: string | null
+          codigo: string
           created_at: string
+          custo_medio: number
           deleted_at: string | null
           descricao: string | null
           estoque_atual: number
           estoque_minimo: number
+          estoque_reservado: number
           fornecedor_id: string | null
           id: string
+          localizacao: string | null
+          marca: string | null
+          modelo: string | null
           nome: string
+          observacoes: string | null
           preco_custo: number
           preco_venda: number
           sku: string | null
+          sku_fabricante: string | null
           unidade: string
           updated_at: string
         }
         Insert: {
           ativo?: boolean
           categoria_id?: string | null
+          codigo?: string
           created_at?: string
+          custo_medio?: number
           deleted_at?: string | null
           descricao?: string | null
           estoque_atual?: number
           estoque_minimo?: number
+          estoque_reservado?: number
           fornecedor_id?: string | null
           id?: string
+          localizacao?: string | null
+          marca?: string | null
+          modelo?: string | null
           nome: string
+          observacoes?: string | null
           preco_custo?: number
           preco_venda?: number
           sku?: string | null
+          sku_fabricante?: string | null
           unidade?: string
           updated_at?: string
         }
         Update: {
           ativo?: boolean
           categoria_id?: string | null
+          codigo?: string
           created_at?: string
+          custo_medio?: number
           deleted_at?: string | null
           descricao?: string | null
           estoque_atual?: number
           estoque_minimo?: number
+          estoque_reservado?: number
           fornecedor_id?: string | null
           id?: string
+          localizacao?: string | null
+          marca?: string | null
+          modelo?: string | null
           nome?: string
+          observacoes?: string | null
           preco_custo?: number
           preco_venda?: number
           sku?: string | null
+          sku_fabricante?: string | null
           unidade?: string
           updated_at?: string
         }
@@ -1203,6 +1344,95 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      ajustar_estoque: {
+        Args: {
+          p_motivo: string
+          p_produto_id: string
+          p_quantidade: number
+          p_sentido: string
+        }
+        Returns: {
+          ativo: boolean
+          categoria_id: string | null
+          codigo: string
+          created_at: string
+          custo_medio: number
+          deleted_at: string | null
+          descricao: string | null
+          estoque_atual: number
+          estoque_minimo: number
+          estoque_reservado: number
+          fornecedor_id: string | null
+          id: string
+          localizacao: string | null
+          marca: string | null
+          modelo: string | null
+          nome: string
+          observacoes: string | null
+          preco_custo: number
+          preco_venda: number
+          sku: string | null
+          sku_fabricante: string | null
+          unidade: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "produtos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      confirmar_uso_peca_os: {
+        Args: { p_peca_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          custo_unitario: number
+          devolvida_em: string | null
+          id: string
+          motivo_devolucao: string | null
+          observacao: string | null
+          os_id: string
+          preco_unitario: number
+          produto_id: string
+          quantidade: number
+          situacao: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at: string
+          utilizada_em: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "os_pecas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      devolver_peca_os: {
+        Args: { p_motivo: string; p_peca_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          custo_unitario: number
+          devolvida_em: string | null
+          id: string
+          motivo_devolucao: string | null
+          observacao: string | null
+          os_id: string
+          preco_unitario: number
+          produto_id: string
+          quantidade: number
+          situacao: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at: string
+          utilizada_em: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "os_pecas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1221,12 +1451,111 @@ export type Database = {
         }
         Returns: Json
       }
+      registrar_entrada_estoque: {
+        Args: {
+          p_data_compra?: string
+          p_documento?: string
+          p_fornecedor_id?: string
+          p_observacao?: string
+          p_produto_id: string
+          p_quantidade: number
+          p_valor_unitario: number
+        }
+        Returns: {
+          ativo: boolean
+          categoria_id: string | null
+          codigo: string
+          created_at: string
+          custo_medio: number
+          deleted_at: string | null
+          descricao: string | null
+          estoque_atual: number
+          estoque_minimo: number
+          estoque_reservado: number
+          fornecedor_id: string | null
+          id: string
+          localizacao: string | null
+          marca: string | null
+          modelo: string | null
+          nome: string
+          observacoes: string | null
+          preco_custo: number
+          preco_venda: number
+          sku: string | null
+          sku_fabricante: string | null
+          unidade: string
+          updated_at: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "produtos"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      remover_peca_os: {
+        Args: { p_motivo?: string; p_peca_id: string }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          custo_unitario: number
+          devolvida_em: string | null
+          id: string
+          motivo_devolucao: string | null
+          observacao: string | null
+          os_id: string
+          preco_unitario: number
+          produto_id: string
+          quantidade: number
+          situacao: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at: string
+          utilizada_em: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "os_pecas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      reservar_peca_os: {
+        Args: {
+          p_observacao?: string
+          p_os_id: string
+          p_preco_unitario?: number
+          p_produto_id: string
+          p_quantidade: number
+        }
+        Returns: {
+          created_at: string
+          created_by: string | null
+          custo_unitario: number
+          devolvida_em: string | null
+          id: string
+          motivo_devolucao: string | null
+          observacao: string | null
+          os_id: string
+          preco_unitario: number
+          produto_id: string
+          quantidade: number
+          situacao: Database["public"]["Enums"]["situacao_peca_os"]
+          updated_at: string
+          utilizada_em: string | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "os_pecas"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       acao_aprovacao_orcamento: "aprovado" | "recusado" | "alteracao_solicitada"
       app_role: "admin" | "tecnico" | "financeiro" | "atendente"
       categoria_foto: "entrada" | "durante_manutencao" | "final" | "entrega"
       prioridade: "baixa" | "media" | "alta" | "urgente"
+      situacao_peca_os: "reservada" | "utilizada" | "removida" | "devolvida"
       status_equipamento:
         | "recebido"
         | "em_analise"
@@ -1284,6 +1613,16 @@ export type Database = {
       tipo_item_orcamento: "produto" | "servico"
       tipo_lancamento: "entrada" | "saida"
       tipo_movimentacao: "entrada" | "saida" | "ajuste"
+      tipo_movimentacao_estoque:
+        | "entrada"
+        | "saida"
+        | "reserva"
+        | "liberacao_reserva"
+        | "uso_os"
+        | "ajuste_positivo"
+        | "ajuste_negativo"
+        | "devolucao"
+        | "ajuste"
       tipo_pessoa: "fisica" | "juridica"
     }
     CompositeTypes: {
@@ -1420,6 +1759,7 @@ export const Constants = {
       app_role: ["admin", "tecnico", "financeiro", "atendente"],
       categoria_foto: ["entrada", "durante_manutencao", "final", "entrega"],
       prioridade: ["baixa", "media", "alta", "urgente"],
+      situacao_peca_os: ["reservada", "utilizada", "removida", "devolvida"],
       status_equipamento: [
         "recebido",
         "em_analise",
@@ -1483,6 +1823,17 @@ export const Constants = {
       tipo_item_orcamento: ["produto", "servico"],
       tipo_lancamento: ["entrada", "saida"],
       tipo_movimentacao: ["entrada", "saida", "ajuste"],
+      tipo_movimentacao_estoque: [
+        "entrada",
+        "saida",
+        "reserva",
+        "liberacao_reserva",
+        "uso_os",
+        "ajuste_positivo",
+        "ajuste_negativo",
+        "devolucao",
+        "ajuste",
+      ],
       tipo_pessoa: ["fisica", "juridica"],
     },
   },
