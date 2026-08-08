@@ -12,7 +12,8 @@ export type Prioridade = Database["public"]["Enums"]["prioridade"];
 export type StatusOrcamento = Database["public"]["Enums"]["status_orcamento"];
 export type TipoLancamento = Database["public"]["Enums"]["tipo_lancamento"];
 export type StatusLancamento = Database["public"]["Enums"]["status_lancamento"];
-export type TipoMovimentacao = Database["public"]["Enums"]["tipo_movimentacao"];
+export type TipoMovimentacao = Database["public"]["Enums"]["tipo_movimentacao_estoque"];
+export type SituacaoPecaOS = Database["public"]["Enums"]["situacao_peca_os"];
 export type TipoAgenda = Database["public"]["Enums"]["tipo_agenda"];
 export type TipoItemOrcamento = Database["public"]["Enums"]["tipo_item_orcamento"];
 export type AcaoAprovacaoOrcamento = Database["public"]["Enums"]["acao_aprovacao_orcamento"];
@@ -36,6 +37,7 @@ export type Produto = Tables<"produtos">;
 export type CategoriaProduto = Tables<"categorias_produto">;
 export type Fornecedor = Tables<"fornecedores">;
 export type MovimentacaoEstoque = Tables<"movimentacoes_estoque">;
+export type OsPeca = Tables<"os_pecas">;
 export type AgendaEvento = Tables<"agenda_eventos">;
 export type Empresa = Tables<"empresa">;
 
@@ -54,6 +56,20 @@ export type OSComRelacoes = OrdemServico & {
   clientes?: Cliente | null;
   equipamentos?: Equipamento | null;
   os_eventos?: OSEvento[];
+};
+
+export type ProdutoComRelacoes = Produto & {
+  categorias_produto?: Pick<CategoriaProduto, "id" | "nome"> | null;
+  fornecedores?: Pick<Fornecedor, "id" | "nome"> | null;
+};
+
+export type OsPecaComProduto = OsPeca & {
+  produtos?: Pick<Produto, "id" | "nome" | "codigo" | "unidade"> | null;
+};
+
+export type MovimentacaoComProduto = MovimentacaoEstoque & {
+  produtos?: Pick<Produto, "id" | "nome" | "codigo" | "unidade"> | null;
+  ordens_servico?: Pick<OrdemServico, "id" | "numero_os"> | null;
 };
 
 export type OrcamentoComRelacoes = Orcamento & {
