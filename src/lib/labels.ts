@@ -3,6 +3,7 @@ import type {
   AppRole,
   CategoriaFoto,
   Prioridade,
+  SituacaoPecaOS,
   StatusEquipamento,
   StatusLancamento,
   StatusOrdemServico,
@@ -121,10 +122,23 @@ export const tipoAgendaLabels: Record<TipoAgenda, string> = {
   compromisso: "Compromisso",
 };
 
-export const tipoMovimentacaoLabels: Record<TipoMovimentacao, string> = {
-  entrada: "Entrada",
-  saida: "Saída",
-  ajuste: "Ajuste",
+export const tipoMovimentacaoLabels: Record<TipoMovimentacao, { label: string; tone: Tone }> = {
+  entrada: { label: "Entrada", tone: "success" },
+  saida: { label: "Saída", tone: "danger" },
+  reserva: { label: "Reserva para OS", tone: "warning" },
+  liberacao_reserva: { label: "Liberação de reserva", tone: "info" },
+  uso_os: { label: "Uso em OS", tone: "primary" },
+  ajuste_positivo: { label: "Ajuste positivo", tone: "success" },
+  ajuste_negativo: { label: "Ajuste negativo", tone: "danger" },
+  devolucao: { label: "Devolução", tone: "info" },
+  ajuste: { label: "Ajuste", tone: "neutral" },
+};
+
+export const situacaoPecaLabels: Record<SituacaoPecaOS, { label: string; tone: Tone }> = {
+  reservada: { label: "Reservado", tone: "warning" },
+  utilizada: { label: "Utilizado", tone: "success" },
+  removida: { label: "Removido", tone: "neutral" },
+  devolvida: { label: "Devolvido", tone: "info" },
 };
 
 export const roleLabels: Record<AppRole, string> = {
