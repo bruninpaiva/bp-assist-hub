@@ -746,27 +746,201 @@ export const financeiroService = {
     unwrap(await supabase.from("categorias_financeiras").select("*").order("nome")),
 };
 
+export type EstoqueFiltro = "todos" | "com_estoque" | "sem_estoque" | "estoque_baixo";
+
+export interface ProdutosListParams {
+  busca?: string;
+  categoriaId?: string;
+  filtro?: EstoqueFiltro;
+  incluirInativos?: boolean;
+}
+
+export interface EntradaEstoqueInput {
+  produto_id: string;
+  quantidade: number;
+  valor_unitario: number;
+  fornecedor_id?: string | null;
+  documento?: string | null;
+  data_compra?: string | null;
+  observacao?: string | null;
+}
+
 export const estoqueService = {
-  produtos: async () =>
-    unwrap(
-      await supabase
-        .from("produtos")
-        .select("*, categorias_produto(id, nome), fornecedores(id, nome)")
-        .is("deleted_at", null)
-        .order("nome"),
-    ),
+  /**
+   * Lista de produtos com filtros de estoque. Os filtros dependentes de
+   * comparação entre colunas (baixo/disponível) são resolvidos no cliente,
+   * pois o PostgREST não compara duas colunas em `filter`.
+   */
+  produtos: async (params: ProdutosListParams = {}) => {
+    const { busca, categoriaId, filtro = "todos", incluirInativos = false } = params;
+    let query = supabase
+      .from("produtos")
+      .select("*, categorias_produto(id, nome), fornecedores(id, nome)")
+      .is("deleted_at", null);
+
+    if (!incluirInativos) query = query.eq("ativo", true);
+    if (categoriaId) query = query.eq("categoria_id", categoriaId);
+    if (busca?.trim()) {
+      const termo = busca.trim();
+      query = query.or(
+        `nome.ilike.%${termo}%,codigo.ilike.%${termo}%,marca.ilike.%${termo}%,sku.ilike.%${termo}%,sku_fabricante.ilike.%${termo}%`,
+      );
+    }
+
+    const data = unwrap(await query.order("nome"));
+    return data.filter((p) => {
+      const atual = Number(p.estoque_atual);
+      const minimo = Number(p.estoque_minimo);
+      if (filtro === "com_estoque") return atual > 0;
+      if (filtro === "sem_estoque") return atual <= 0;
+      if (filtro === "estoque_baixo") return atual > 0 && atual <= minimo;
+      return true;
+    });
+  },
+
+  produto: async (id: string) => {
+    const { data, error } = await supabase
+      .from("produtos")
+      .select("*, categorias_produto(id, nome), fornecedores(id, nome)")
+      .eq("id", id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  criarProduto: async (payload: Database["public"]["Tables"]["produtos"]["Insert"]) => {
+    const { data, error } = await supabase.from("produtos").insert(payload).select().single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  atualizarProduto: async (
+    id: string,
+    payload: Database["public"]["Tables"]["produtos"]["Update"],
+  ) => {
+    const { data, error } = await supabase
+      .from("produtos")
+      .update(payload)
+      .eq("id", id)
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  /** Produtos nunca são apagados: quantidade e histórico dependem do cadastro. */
+  alternarAtivo: async (id: string, ativo: boolean) => {
+    const { error } = await supabase.from("produtos").update({ ativo }).eq("id", id);
+    if (error) throw new Error(error.message);
+  },
+
   categorias: async () =>
     unwrap(await supabase.from("categorias_produto").select("*").order("nome")),
+
+  criarCategoria: async (nome: string, descricao?: string | null) => {
+    const { data, error } = await supabase
+      .from("categorias_produto")
+      .insert({ nome: nome.trim(), descricao: descricao?.trim() || null })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
   fornecedores: async () =>
     unwrap(await supabase.from("fornecedores").select("*").is("deleted_at", null).order("nome")),
-  movimentacoes: async () =>
+
+  movimentacoes: async (produtoId?: string) => {
+    let query = supabase
+      .from("movimentacoes_estoque")
+      .select("*, produtos(id, nome, codigo, unidade), ordens_servico(id, numero_os)")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (produtoId) query = query.eq("produto_id", produtoId);
+    return unwrap(await query);
+  },
+
+  /** Entrada de compra: soma ao estoque e recalcula o custo médio ponderado no banco. */
+  registrarEntrada: async (input: EntradaEstoqueInput) => {
+    const { data, error } = await supabase.rpc("registrar_entrada_estoque", {
+      p_produto_id: input.produto_id,
+      p_quantidade: input.quantidade,
+      p_valor_unitario: input.valor_unitario,
+      p_fornecedor_id: input.fornecedor_id ?? undefined,
+      p_documento: input.documento ?? undefined,
+      p_data_compra: input.data_compra ?? undefined,
+      p_observacao: input.observacao ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  ajustar: async (params: {
+    produto_id: string;
+    quantidade: number;
+    sentido: "entrada" | "saida";
+    motivo: string;
+  }) => {
+    const { data, error } = await supabase.rpc("ajustar_estoque", {
+      p_produto_id: params.produto_id,
+      p_quantidade: params.quantidade,
+      p_sentido: params.sentido,
+      p_motivo: params.motivo,
+    });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+};
+
+/** Peças vinculadas a uma OS — reserva, uso e devolução acontecem em rotinas atômicas do banco. */
+export const pecasOsService = {
+  list: async (osId: string) =>
     unwrap(
       await supabase
-        .from("movimentacoes_estoque")
-        .select("*, produtos(id, nome, unidade)")
-        .order("created_at", { ascending: false })
-        .limit(100),
+        .from("os_pecas")
+        .select("*, produtos(id, nome, codigo, unidade)")
+        .eq("os_id", osId)
+        .order("created_at", { ascending: true }),
     ),
+
+  reservar: async (params: {
+    os_id: string;
+    produto_id: string;
+    quantidade: number;
+    preco_unitario?: number | null;
+    observacao?: string | null;
+  }) => {
+    const { data, error } = await supabase.rpc("reservar_peca_os", {
+      p_os_id: params.os_id,
+      p_produto_id: params.produto_id,
+      p_quantidade: params.quantidade,
+      p_preco_unitario: params.preco_unitario ?? undefined,
+      p_observacao: params.observacao ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+    return data;
+  },
+
+  remover: async (pecaId: string, motivo?: string | null) => {
+    const { error } = await supabase.rpc("remover_peca_os", {
+      p_peca_id: pecaId,
+      p_motivo: motivo ?? undefined,
+    });
+    if (error) throw new Error(error.message);
+  },
+
+  confirmarUso: async (pecaId: string) => {
+    const { error } = await supabase.rpc("confirmar_uso_peca_os", { p_peca_id: pecaId });
+    if (error) throw new Error(error.message);
+  },
+
+  devolver: async (pecaId: string, motivo: string) => {
+    const { error } = await supabase.rpc("devolver_peca_os", {
+      p_peca_id: pecaId,
+      p_motivo: motivo,
+    });
+    if (error) throw new Error(error.message);
+  },
 };
 
 export const agendaService = {
